@@ -1,5 +1,5 @@
 <template>
-    <div class="flex grow flex-col justify-center">
+    <div class="flex grow flex-col justify-center bg-slate-700">
         <div class="flex flex-row justify-center">
             <div class="flex flex-col justify-start text-blue-500 text-xl">
                 <div class="flex flex-row justify-center wave">

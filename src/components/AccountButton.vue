@@ -13,7 +13,7 @@
                 </svg>
             </div>
             <div v-if="User.CurrentUser != null">
-                <img :src="User.CurrentUser.icon" alt="user icon" class="h-8 rounded-lg">
+                <img :src="User.CurrentUser.icon" alt="user icon" class="h-8 rounded-lg border border-2 transition-all" :class="this.active? 'border-blue-500':'border-slate-600'">
             </div>
         </div>
     </div>
