@@ -3,7 +3,7 @@
         <div class="flex flex-col grow min-h-0">
             <bar-title class="mt-2"> Connected Extensions </bar-title>
             <div class="flex grow flex-wrap p-2 min-h-0 overflow-auto">
-                
+
                 <div ref="extensions" v-for="ext in this.extensions" class="p-2 m-2 w-fit h-fit rounded-lg border border-2 border-slate-600 shadow-lg">
                     <div class="w-fit h-fit mx-auto text-blue-500 p-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-16 h-16">
@@ -34,7 +34,16 @@
             </div>
         </div>
         <div ref="server" class="flex flex-row justify-between bg-slate-600 p-1">
-            <div class="flex flex-col justify-center"> <p class="text-slate-400 text-xl font-bold"> Extension server </p> </div>
+            <div class="flex flex-row space-x-2">
+                <div class="flex flex-col justify-center"> <p class="text-slate-400 text-xl font-bold"> Extension server </p> </div>
+                <!--
+                <div class="flex flex-col justify-center">
+                    <p ref="toogle-btn" v-on:click="toogleServer()"
+                        class="text-blue-500 bg-black/[0.1] text-md font-semibold border-2 border-transparent rounded py-0 px-2
+                        cursor-pointer hover:border-blue-500 hover:bg-blue-500/[0.1] transition-all"> Start </p>
+                </div>
+                -->
+            </div>
             <div class="flex flex-row space-x-2">
                 <div class="flex flex-col justify-center"> <p class="text-slate-400 text-xl font-bold">State : </p> </div>
                 <div class="flex flex-col justify-center">
@@ -62,33 +71,106 @@ import FlatButton from '@/components/FlatButton.vue';
 import BarTitle from '../components/BarTitle.vue';
 import Router from '../scripts/Router';
 
-export default {
-    name: "Extensions",
-    components: { BarTitle, FlatButton },
-    methods: {},
-    data() { return {extensions: [], server: {}} },
-    setup() {},
-    mounted() {
-        // get extensions server state
-        Router.executeRoute(Router.routes.getExtensionServerState).then((res) => {
-            this.server.state = res.state;
-            this.server.ip = res.ip;
-            this.server.port = res.port;
-            this.server.color = res.state.toLowerCase() == "running" ? "green" : res.state.toLowerCase() == "stopped" ? "orange" : "red";
-        });
+let toogleBtn = null;
+let page = null;
+let serverState = {};
+let extensions = [];
 
-        // get connected extensions
-        Router.executeRoute(Router.routes.getExtensions).then(res => {
+function updateServerButton() {
+    if (toogleBtn == null) return;
+    switch (serverState.state.toLowerCase()) {
+        case "started":
+            toogleBtn.innerText = "Stop";
+            break;
+        case "starting":
+            toogleBtn.innerText = "Starting ...";
+            break;
+        case "stopped":
+            toogleBtn.innerText = "Start";
+            break;
+        case "stopping":
+            toogleBtn.innerText = "Stopping ...";
+            break;
+        default:
+            break;
+    }
+}
+
+function updateServerState() {
+    return new Promise((resolve, reject) => {
+        Router.routes.getExtensionServerInfos.send().then(res => {
+            serverState = res;
+            serverState.color = res.state == "Started" ? "green" : res.state == "Stopped" ? "orange" : res.state == "Error"? "red" : "blue";
+            page.server = serverState;
+            if (page != null) page.$forceUpdate();
+            updateServerButton();
+            resolve();
+        }).catch(err => { console.log("error: ", err); });
+    });
+}
+
+function toogleServer() {
+    if (serverState.state == "Started") {
+        serverState.state = "Stopping";
+        updateServerState();
+        Router.routes.stopExtensionServer.send().then(res => {
+            updateServerState();
+        }).catch(err => { console.log("error: ", err) });
+    } else if (serverState.state == "Stopped") {
+        serverState.state = "Starting";
+        updateServerState();
+        Router.routes.startExtensionServer.send().then(res => {
+            updateServerState();
+        }).catch(err => console.error("error: ", err));
+    }
+}
+
+function updateExtensions() {
+    return new Promise((resolve, reject) => {
+        Router.routes.getExtensions.send().then(res => {
+            extensions.splice(0, extensions.length);
             res.forEach(ext => {
-                this.extensions.push(ext);
+                extensions.push(ext);
                 ext.disconnect = () => {
-                    Router.executeRoute(Router.routes.disconnectExtension, {id: ext.id}).then(res => {
-                        if (res)
-                            this.extensions.splice(this.extensions.findIndex(val => val.id == ext.id), 1);
+                    Router.routes.disconnectExtension.send({id: ext.id}).then(res => {
+                        if (res) {
+                            extensions.splice(this.extensions.findIndex(val => val.id == ext.id), 1);
+                            if (page != null) {
+                                page.extensions = extensions;
+                                page.$forceUpdate();
+                            }
+                        }
                     });
                 }
             });
+            if (page != null) {
+                page.extensions = extensions;
+                page.$forceUpdate();
+            }
+            resolve();
+        }).catch(err => console.error("Error: ", err));
+    });
+}
+
+export default {
+    name: "Extensions",
+    components: { BarTitle, FlatButton },
+    methods: { toogleServer },
+    data() { return {extensions: extensions, server: serverState} },
+    setup() {},
+    mounted() {
+        toogleBtn = this.$refs["toogle-btn"];
+        page = this;
+
+        // get extensions server state
+        updateServerState().then(() => {
+            if (serverState.state != "Started") {
+                Router.routes.startExtensionServer.send().then(res => {
+                    updateServerState();
+                }).catch(err => console.error("error: ", err));
+            }
         });
+        setInterval(() => { updateExtensions(); }, 500);
     }
 }
 </script>

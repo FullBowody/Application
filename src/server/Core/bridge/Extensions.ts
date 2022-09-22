@@ -1,5 +1,25 @@
 const fullbowody = require('../build/fullbowody.node');
 
+class State {
+    value: number;
+    constructor(value: number) {
+        this.value = value;
+    }
+
+    toString() {
+        let val:string = "Unknown";
+        switch (this.value) {
+            case 0: val = "Error"; break;
+            case 1: val = "Stopped"; break;
+            case 2: val = "Started"; break;
+            case 3: val = "Starting"; break;
+            case 4: val = "Stopping"; break;
+            default: break;
+        }
+        return val;
+    }
+}
+
 class Extension {
     #name:string = "";
     #ip:string = "";
@@ -30,7 +50,15 @@ class ExtensionsServer {
     }
 
     static getState() {
-        return fullbowody.extensions_getState();
+        return new State(fullbowody.extensions_getState());
+    }
+
+    static getInfos() {
+        return {
+            state: ExtensionsServer.getState().toString(),
+            ip: fullbowody.extensions_getIp(),
+            port: fullbowody.extensions_getPort()
+        }
     }
 
     static onExtensionUpdate(callback:Function) {

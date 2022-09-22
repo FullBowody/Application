@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, shell } from 'electron';
+import { BrowserWindow, ipcMain, shell, webContents } from 'electron';
 import { routes } from "../scripts/Routes";
 import FullBowody from './Core/bridge/FullBowody';
 
@@ -13,20 +13,36 @@ ipcMain.on("openLink", (ev, link) => {
     shell.openExternal(link);
 });
 
-routes.getExtensionServerState.setCallback((ev, data) => {
-    return {
-        state: "Running", // (Running, Stopped, Error)
-        ip: "192.168.1.42",
-        port: 5621
-    }
+routes.startExtensionServer.onRequest((ev, data) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            FullBowody.ExtensionsServer.start().then(resolve).catch(reject);
+        }, 500);
+    })
+});
+routes.stopExtensionServer.onRequest((ev, data) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            FullBowody.ExtensionsServer.stop().then(resolve).catch(reject);
+        }, 500);
+    })
 });
 
-routes.getExtensions.setCallback((ev, data) => {
-    return FullBowody.ExtensionsServer.getExtensions().map(ext => ({name: ext.getName(), ip: ext.getIp(), port: ext.getPort(), id: ext.getIp() + ":" + ext.getPort()}));
+routes.getExtensionServerInfos.onRequest((ev, data) => {
+    return FullBowody.ExtensionsServer.getInfos();
 });
 
-routes.disconnectExtension.setCallback((ev, data) => {
+routes.getExtensions.onRequest((ev, data) => {
+    return FullBowody.ExtensionsServer.getExtensions().map(ext => ({
+        name: ext.getName(),
+        ip: ext.getIp(),
+        port: ext.getPort(),
+        id: ext.getIp() + ":" + ext.getPort()
+    }));
+});
+
+routes.disconnectExtension.onRequest((ev, data) => {
     return true;
 });
 
-routes.forEach(route => route.setup(ipcMain));
+routes.forEach(route => route.setupServer(ipcMain));
