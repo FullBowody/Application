@@ -26,7 +26,7 @@ export default {
         changeTab
     },
     setup() {
-        ipc.send('setTitle', 'FullBowody - Application');
+        //ipc.send('setTitle', 'FullBowody - Application');
 
         window.addEventListener("keydown", ev => {
             const isAlt = ev.key == 'Alt';
