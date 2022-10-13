@@ -1,5 +1,5 @@
 # FullBowody GUI
-This repository contains the source code for the FullBowody UI.
+This repository contains the source code for the FullBowody GUI.
 It is a web application used as an interface between the user and
 the [FullBowody Engine](https://github.com/FullBowody/Engine).
 
