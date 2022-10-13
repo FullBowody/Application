@@ -1,10 +1,14 @@
-# FullBowody GUI
-This repository contains the source code for the FullBowody GUI.
+# FullBowody Application
+This repository contains the source code for the FullBowody Application.
 It is a web application used as an interface between the user and
 the [FullBowody Engine](https://github.com/FullBowody/Engine).
 
-This project uses electron to create a windowed application.
-It is built mainly using [Vue.js](https://vuejs.org/) and [TailwindCSS](https://tailwindcss.com/).
+## Project Informations
+- This project uses [Electron](https://www.electronjs.org/) to create a windowed application.
+- The main used frameworks to create the UI are [Vue.js](https://vuejs.org/) and [TailwindCSS](https://tailwindcss.com/).
+- The application is built using [Webpack](https://webpack.js.org/).
+- All the server side code is written in [TypeScript](https://www.typescriptlang.org/).
+- The application is packaged using [electron-builder](https://www.electron.build/).
 
 ## Setup the project
 To setup the entire project, run the following command:
@@ -29,3 +33,6 @@ npm run electron:build
 
 ## License
 This project is licensed under the GNU GPL-3.0 License - see the [LICENSE](LICENSE) file for details
+
+---
+Author : [FurWaz](https://github.com/furwaz)
