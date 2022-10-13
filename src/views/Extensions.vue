@@ -100,7 +100,8 @@ function updateServerState() {
     return new Promise((resolve, reject) => {
         Router.routes.getExtensionServerInfos.send().then(res => {
             serverState = res;
-            serverState.color = res.state == "Started" ? "green" : res.state == "Stopped" ? "orange" : res.state == "Error"? "red" : "blue";
+            console.log(res);
+            serverState.color = res.state == "Running" ? "green" : res.state == "Stopped" ? "orange" : "red";
             page.server = serverState;
             if (page != null) page.$forceUpdate();
             updateServerButton();
@@ -164,8 +165,9 @@ export default {
 
         // get extensions server state
         updateServerState().then(() => {
-            if (serverState.state != "Started") {
-                Router.routes.startExtensionServer.send().then(res => {
+            console.log(serverState.state);
+            if (serverState.state != "Running") {
+                Router.routes.startExtensionServer.send().then(() => {
                     updateServerState();
                 }).catch(err => console.error("error: ", err));
             }
