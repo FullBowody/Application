@@ -11,8 +11,8 @@ To setup the entire project, run the following command:
 ```bash
 npm install
 ```
-Make sure the FullBowody 's Engine addon is located in the `/server/Core/build` folder,
-with the FullBowody 's Engine bridge located in the `/server/Core/bridge` folder.
+Make sure the FullBowody 's Engine addon is located in the `src/server/Core/build` folder,
+with the FullBowody 's Engine bridge located in the `src/server/Core/bridge` folder.
 
 ## Run and debug the project
 To run the project in a electron window 
