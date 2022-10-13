@@ -1,24 +1,31 @@
-# fullbowody
+# FullBowody UI
+This repository contains the source code for the FullBowody UI.
+It is a web application used as an interface between the user and
+the [FullBowody Engine](https://github.com/FullBowody/Engine).
 
-## Project setup
-```
+This project uses electron to create a windowed application.
+It is built mainly using [Vue.js](https://vuejs.org/) and [TailwindCSS](https://tailwindcss.com/).
+
+## Setup the project
+To setup the entire project, run the following command:
+```bash
 npm install
 ```
+Make sure the FullBowody 's Engine addon is located in the `/server/Core/build` folder,
+with the FullBowody 's Engine bridge located in the `/server/Core/bridge` folder.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
+## Run and debug the project
+To run the project in a electron window 
+with devlopment features like hot reload, run
+```bash
+npm run electron:serve
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Build the project
+To build the project, run
+```bash
+npm run electron:build
+```
+
+## License
+This project is licensed under the GNU GPL-3.0 License - see the [LICENSE](LICENSE) file for details
