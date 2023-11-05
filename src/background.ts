@@ -1,13 +1,11 @@
 import { app, protocol, BrowserWindow, Tray, Menu } from 'electron';
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
-import { getSetting, SETTINGS } from './server/Settings';
+import './ipc.ts';
 
 import path from 'path';
+import { getSetting } from './ipc';
 declare const __static: string;
-
-import "./server/Router";
-import Engine from "./server/Engine";
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -17,7 +15,6 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 function shutdown() {
-    Engine.stop();
     app.quit();
 }
 
@@ -35,6 +32,7 @@ async function createWindow() {
         width: 1280,
         height: 720,
         title: "FullBowody",
+        icon: "src/assets/logo.png",
         webPreferences: {
             nodeIntegration: false && process.env.ELECTRON_NODE_INTEGRATION,
             contextIsolation: true || !process.env.ELECTRON_NODE_INTEGRATION,
@@ -42,7 +40,7 @@ async function createWindow() {
             preload: path.resolve(__static, "server/preload.ts"),
         },
         autoHideMenuBar: true
-    })
+    });
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
@@ -57,7 +55,7 @@ async function createWindow() {
 
 let tray = null;
 app.whenReady().then(() => {
-    tray = new Tray("src/assets/icon.png");
+    tray = new Tray("src/assets/logo.png");
     const contextMenu = Menu.buildFromTemplate([
         { label: 'Open UI', type: 'normal', click: openWindowIfClosed },
         { label: 'Separator', type: 'separator' },
@@ -77,11 +75,11 @@ app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     
-    getSetting(SETTINGS.KEEP_RUNNING_CLOSED).then(keep => {
-        if (!keep && process.platform !== 'darwin') {
-            shutdown();
-        }
-    }).catch(err => console.error(err));
+    if (process.platform !== 'darwin') {
+        getSetting("common.shutdownOnClose").then((res: any) => {
+            if (res !== false) shutdown();
+        })
+    }
 });
 
 app.on('activate', () => {
@@ -102,7 +100,6 @@ app.on('ready', async () => {
             console.error('Vue Devtools failed to install:', e.toString())
         }
     }
-    Engine.start();
     createWindow()
 });
 

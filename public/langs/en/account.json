@@ -1,0 +1,9 @@
+{
+    "NotLoggedIn": "You are not logged in",
+    "NotLoggedInDesc": "Please log in to access all features of the app",
+    "Account": "Account",
+    "Addons": "Addons",
+    "NoAddons": "No addons installed",
+    "NoAddonsDesc": "You can install addons from",
+    "Here": "here"
+}

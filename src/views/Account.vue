@@ -1,163 +1,154 @@
 <template>
-    <div class="flex grow">
-        <div v-if="User.CurrentUser == null" class="flex grow flex-col justify-center">
-            <div class="flex flex-row justify-center p-4 rounded-lg border border-2 border-slate-600 shadow-lg mx-auto">
-                <div class="flex flex-col justify-between">
-                    <div class="flex flex-row justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-20 h-20 text-blue-500">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <div class="flex flex-col justify-center"> <h3 class="text-2xl font-bold text-blue-500"> Login </h3> </div>
-                    </div>
-
-                    <h3 class="text-center text-lg font-semibold text-slate-500"> Please login to see your account </h3>
-                    <div class="flex flex-row pt-8 justify-between">
-                        <div class="flex flex-col justify-center mr-4 pt-1">
-                            <p class="text-lg text-slate-200"> Username : </p>
-                        </div>
-                        <div class="flex flex-col justify-center">
-                            <input ref="input-username" type="text" class="outline-none border border-2 border-slate-400 transition-all text-blue-400 text-md font-semibold rounded-md p-0.5 w-full h-fit text-center bg-transparent focus:bg-slate-600/[0.5] focus:border-slate-200">
-                        </div>
-                    </div>
-                    <div class="flex flex-row pt-4 justify-between">
-                        <div class="flex flex-col justify-center mr-4 pt-1">
-                            <p class="text-lg text-slate-200"> Password : </p>
-                        </div>
-                        <div class="flex flex-col justify-center">
-                            <input id="input-password" ref="input-password" type="password" class="outline-none border border-2 border-slate-400 transition-all text-blue-400 text-md font-semibold rounded-md p-0.5 w-full h-fit text-center bg-transparent focus:bg-slate-600/[0.5] focus:border-slate-200">
-                        </div>
-                    </div>
-                    <div ref="log-zone" class="flex grow-0 overflow-hidden h-0 transition-all mt-2">
-                        <p class="text-white text-center w-full h-fit min-w-fit font-semibold"></p>
-                    </div>
-                    <div class="flex flex-row mt-2 justify-between">
-                        <text-button :onclick="() => openLink('http://furwaz.com/register')" > Create account </text-button>
-                        <flat-button :init="(obj) => setLoginButton(obj)" :onclick="login"> Login </flat-button>
-                    </div>
+    <div class="flex grow min-w-0 max-w-full p-4">
+        <div
+            v-if="User.CurrentUser === null"
+            class="flex grow justify-center items-center"
+        >
+            <div class="w-fit h-fit text-center space-y-8">
+                <div class="w-fit mx-auto">
+                    <p class="text-2xl font-semibold">
+                        <get-text :context="Lang.CreateTranslationContext('account', 'NotLoggedIn')" />
+                    </p>
+                    <p class="text-md">
+                        <get-text :context="Lang.CreateTranslationContext('account', 'NotLoggedInDesc')" />
+                    </p>
+                </div>
+                <div class="w-fit mx-auto">
+                    <comp-btnblock @click="login">
+                        <get-text :context="Lang.CreateTranslationContext('verbs', 'LogIn')" />
+                    </comp-btnblock>
                 </div>
             </div>
         </div>
-        <div v-if="User.CurrentUser != null" class="flex grow flex-col justify-center">
-            <div class="flex flex-row justify-center">
-                <div class="flex flex-col">
-                    <div class="flex flex-row">
-                        <div class="flex flex-col justify-center mr-4"> <h3 class="text-xl font-bold text-slate-200"> Connected to : </h3> </div>
-                        <div class="flex flex-row justify-center pr-4 p-1.5 bg-slate-600 rounded-lg mx-auto">
-                            <div class="flex flex-col justify-between">
-                                <div class="flex flex-row">
-                                    <img v-if="User.CurrentUser.icon != ''" :src="User.CurrentUser.icon" alt="user icon" class="h-10 mr-4 rounded-lg border border-2 border-blue-500">
-                                    <div v-if="User.CurrentUser.icon == ''">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mr-1 text-blue-500">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                    </div>
-                                    <div class="flex flex-col justify-center"> <h3 class="text-xl font-bold text-blue-500"> {{ User.CurrentUser.username }} </h3> </div>
-                                </div>
+        <div
+            v-else
+            class="flex grow flex-col space-y-8 items-center"
+        >
+            <div class="h-fit w-full">
+                <p class="text-xl font-semibold pb-2">
+                    <get-text :context="Lang.CreateTranslationContext('account', 'Account')" />
+                </p>
+                <comp-card class="flex justify-between p-4">
+                    <div class="flex w-fit min-w-0 my-4 space-x-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-16 h-16">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                        </svg>
+                        <div class="flex h-full w-fit justify-center items-center">
+                            <div class="h-fit w-fit">
+                                <p class="text-3xl font-semibold">
+                                    {{ User.CurrentUser?.pseudo }}
+                                </p>
+                                <p class="text-md">
+                                    <get-text :context="Lang.CreateTranslationContext('verbs', 'Connected')" />
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <div class="py-2">
-                        <flat-button class="w-full" :onclick="() => { User.forget(); openLink('/account'); }">Log out</flat-button>
-                    </div>
-                    <div class="flex flex-col grow-0 h-fit px-4 mt-2 rounded-lg border border-2 border-slate-600">
-                        <h3 class="text-xl text-slate-500 text-center w-fit mx-auto"> Activated addons </h3>
-                        <div class="flex grow flex-row justify-center space-y-2 h-[50vh]">
-                            <div class="flex grow flex-col justify-center">
-                                <p class="text-center text-lg font-semibold text-slate-400"> No addons yet :/ </p>
-                                <p class="text-center text-base font-semibold text-blue-500 hover:text-blue-400 cursor-pointer" v-on:mousedown="openLink('http://furwaz.com/fullbowody/addons')"> See available addons </p>
-                            </div>
+                    <div class="flex flex-col grow justify-center items-end">
+                        <div class="flex flex-col h-full justify-evenly items-center">
+                            <comp-btnblock :onclick="logout">
+                                <get-text :context="Lang.CreateTranslationContext('verbs', 'LogOut')" />
+                            </comp-btnblock>
                         </div>
+                    </div>
+                </comp-card>
+            </div>
+            <div class="h-fit w-full">
+                <div class="flex justify-between mb-2">
+                    <p class="text-xl font-semibold">
+                        <get-text :context="Lang.CreateTranslationContext('account', 'Addons')" />
+                    </p>
+                    <div class="flex w-fit justify-center items-center">
+                        <comp-btnblock :onclick="refreshAddons">
+                            <svg ref="refreshIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="h-4 text-slate-200">
+                                <path d="M463.5 224H472c13.3 0 24-10.7 24-24V72c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1c-87.5 87.5-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H463.5z"/>
+                            </svg>
+                        </comp-btnblock>
                     </div>
                 </div>
+                <comp-card class="flex justify-between p-4">
+                    <div
+                        v-if="addons.length === 0"
+                        class="h-fit w-fit my-8 mx-auto">
+                        <p class="text-center text-lg font-semibold">
+                            <get-text :context="Lang.CreateTranslationContext('account', 'NoAddons')" />
+                        </p>
+                        <p class="flex space-x-1 text-center text-md">
+                            <get-text :context="Lang.CreateTranslationContext('account', 'NoAddonsDesc')" />
+                            <button
+                                class="href"
+                                @click="openAddonsPage"
+                            >
+                                <get-text :context="Lang.CreateTranslationContext('account', 'Here')" />
+                            </button>
+                        </p>
+                    </div>
+                </comp-card>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import { openLink } from "../scripts/common";
-import User from '../scripts/User';
-import FlatButton from '../components/FlatButton';
-import TextButton from '@/components/TextButton.vue';
-
-let page = null;
-let loginButton = null;
-function setLoginButton(btn) {
-    loginButton = btn;
-}
-
-function log(msg) {
-    if (page == null) return;
-    const zone = page.$refs['log-zone'];
-    const p = zone.querySelector('p');
-    p.innerHTML = msg;
-    zone.style.height = p.getBoundingClientRect().height + 'px';
-    setTimeout(() => {
-        p.innerHTML = '';
-        zone.style.height = '0px';
-    }, 2000);
-}
-
-function login(btn) {
-    if (page == null) return;
-    let username = page.$refs["input-username"];
-    let password = page.$refs["input-password"];
-    
-    let valid = true;
-    const conditions = [
-        {cond: username.value.length > 0, el: username, msg: "Please enter a username"},
-        {cond: password.value.length > 0, el: password, msg: "Please provide a password"}
-    ];
-
-    for (let i = 0; i < conditions.length; i++) {
-        const condition = conditions[i];
-        if (condition.cond == false) {
-            condition.el.focus();
-            log(condition.msg);
-            valid = false;
-            break;
-        }
-    }
-
-    if (valid == false) return;
-    btn.startLoading();
-    login_user(username.value, password.value).then(() => {
-        btn.stopLoading();
-        openLink('/account');
-    }).catch((err) => {
-        btn.stopLoading();
-        log("Error: "+err);
-        console.error(err);
-    });
-}
-
-function login_user(username, password) {
-    return new Promise((resolve, reject) => {
-        const user = new User({username: username, password: password});
-        user.fetchToken().then(() => {
-            user.fetchInformations().then(() => {
-                resolve();
-            }).catch((err) => { reject(err); });
-        }).catch(err => { reject(err); });
-    });
-}
+import GetText from '@/components/text/GetText.vue';
+import User from '@/scripts/User';
+import Lang from '@/scripts/Lang';
+import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
+import '@/scripts/portal.min.js';
+import CompCard from '@/components/cards/CompCard.vue';
+import CompBtntext from '@/components/inputs/CompBtntext.vue';
 
 export default {
     name: "Account",
     components: {
-        FlatButton,
-        TextButton
+        GetText,
+        CompBtnblock,
+        CompCard,
+        CompBtntext
     },
-    methods: { openLink },
+    methods: {},
     data() {
-        page = this;
-        return { User, login, setLoginButton };
+        return {
+            User,
+            Lang,
+            addons: []
+        }
     },
-    setup() {},
     mounted() {
-        window.addEventListener("keydown", (e) => {
-            if (e.key == "Enter") login(loginButton);
-        });
+        
+    },
+    methods: {
+        async login() {
+            const response = await API.execute(API.ROUTE.TOKEN());
+            const token = response.data;
+
+            ipc.send('open-url', 'https://furwaz.fr/portal?token=' + token);
+            this.register(token);
+        },
+        async register(token) {
+            try {
+                const response = await API.execute(API.ROUTE.REGISTER(token));
+                const user = new User(response.data);
+                user.save();
+                this.$router.go();
+            } catch (err) { console.error(err); }
+        },
+        logout() {
+            User.forget();
+            this.$router.go();
+        },
+        openAddonsPage() {
+            ipc.send('open-url', 'https://fullbowody.projects.furwaz.fr/addons');
+        },
+        refreshAddons() {
+            const icon = this.$refs.refreshIcon;
+            icon.classList.add('spin');
+            setTimeout(() => {
+                icon.classList.remove('spin');
+            }, 500);
+
+            // TODO : Refresh addons
+        }
     }
 }
 </script>

@@ -1,0 +1,13 @@
+{
+    "ExtensionsServer": "Serveur d'extensions",
+    "ServerPort": "Port du serveur : ",
+    "ServerAddress": "Adresse du serveur : ",
+    "ServerStatus": "Statut du serveur : ",
+    "Online": "En ligne",
+    "Offline": "Hors ligne",
+    "Starting": "Démarrage",
+    "Stopping": "Arrêt",
+    "ExtensionsConnected": "Extensions connectées",
+    "NoExtensions": "Aucune extension connectée",
+    "NoExtensionsDesc": "Vous verrez ici les extensions connectées à votre serveur"
+}

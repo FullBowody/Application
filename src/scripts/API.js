@@ -1,3 +1,7 @@
+import Lang from './Lang.js';
+import User from './User.js';
+import ROUTES from './routes.js';
+
 class Credentials {
     static get TYPE() {
         return {
@@ -44,11 +48,90 @@ class Credentials {
     }
 }
 
+class Pagination {
+    constructor (offset = 0, limit = 10) {
+        this._offset = 0;
+        this._limit = 10;
+        this._total = 0;
+
+        this.offset = offset;
+        this.limit = limit;
+
+        this._onChanged = null;
+    }
+
+    set offset(offset) {
+        this._offset = offset ?? 0;
+        this._onChanged?.();
+    }
+
+    set limit(limit) {
+        this._limit = limit ?? 10;
+        this._onChanged?.();
+    }
+
+    set total(total) {
+        this._total = total;
+    }
+
+    set index(index) {
+        this.offset = index * this._limit;
+    }
+
+    next() {
+        this._offset += this._limit;
+        if (this._offset > this.maxIndex * this.limit) this._offset = this.maxIndex * this.limit;
+        this._onChanged?.();
+    }
+
+    previous() {
+        this._offset -= this._limit;
+        if (this._offset < 0) this._offset = 0;
+        this._onChanged?.();
+    }
+
+    get hasPrevious() {
+        return this.index > 0;
+    }
+
+    get hasNext() {
+        return this.index < this.maxIndex;
+    }
+
+    get index() {
+        return this._offset / this._limit;
+    }
+
+    get total() {
+        return this._total;
+    }
+
+    get maxIndex() {
+        return Math.ceil(this._total / this._limit) - 1;
+    }
+
+    get offset() {
+        return this._offset;
+    }
+
+    get limit() {
+        return this._limit;
+    }
+
+    onChanged(callback) {
+        this._onChanged = callback;
+    }
+
+    toString() {
+        return API.createParameters({offset: this.offset, limit: this.limit});
+    }
+}
+
 class API {
     static Credentials = Credentials;
 
     // API constants
-    static API_URL = 'https://api.furwaz.com';
+    static API_URL = 'https://fullbowody.apis.furwaz.fr';
     static get METHOD() {
         return {
             GET: "GET",
@@ -66,16 +149,39 @@ class API {
             NONE: undefined
         }
     }
-    static get AuthorizationHeader() { return "x-furwaz-auth"; };
+
+    static get ERROR() {
+        return {
+            OK: 200,
+            CREATED: 201,
+            ACCEPTED: 202,
+            BAD_REQUEST: 400,
+            UNAUTHORIZED: 401,
+            PAYEMENT_REQUIRED: 402,
+            FORBIDDEN: 403,
+            NOT_FOUND: 404,
+            NOT_ACCEPTABLE: 406,
+            CONFLICT: 409,
+            EXPECTATION_FAILED: 417,
+            TEAPOT: 418,
+            ENHANCE_YOUR_CALM: 420,
+            TOO_MANY_REQUESTS: 429,
+            TOKEN_EXPIRED: 498,
+            INTERNAL_SERVER_ERROR: 500,
+            NOT_IMPLEMENTED: 501
+        }
+    }
+
+    static get AuthorizationHeader() { return "Authorization"; };
+
+    static setURL(url) {
+        if (!url) return;
+        if (url.endsWith("/")) url = url.substring(0, url.length - 1);
+        API.API_URL = url;
+    }
 
     // API routes
-    static ROUTE = {
-        LOGIN: "/auth/token",
-        RESET: "/auth/reset",
-        PASSWORD: "/auth/password",
-        ME: "/users/me",
-        USERS: "/users"
-    };
+    static ROUTE = ROUTES;
 
     /**
      * Makes an API call with the specified parameters
@@ -83,21 +189,21 @@ class API {
      * @param {string} method API call method (see API.METHOD for possible values)
      * @param {object|string} body API call body (data to send, ignored if METHOD.GET is used)
      * @param {string} type API call data type (see API.TYPE for possible values))  
-     * @param {object[]}} headers API call additionnal headers
+     * @param {object[]} headers API call additional headers
      * @returns a promise resolving when the API call is done
      */
-    static execute(path, method = this.METHOD.GET, body = {}, type = this.TYPE.JSON, headers = []) {
+    static execute(path, method = this.METHOD.GET, body = {}, type = this.TYPE.JSON, headers = {}) {
         return new Promise((resolve, reject) => {
-            path = path.replace("/?", "?").replaceAll("//", "/");
+            if (API.API_URL == null) reject("Error : API host not set");
+            path = path.replace("/?", "?").replace(/\/\//g, "/");
             let urlparts = path.split("?");
             let base = urlparts.splice(0, 1);
             let params = (urlparts.length > 0)? ("?" + urlparts.join("&")) : "";
             path = base + params;
 
             let reqHeaders = {
-                "User-Agent": navigator.userAgent,
                 "Accept": "application/json",
-                "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3"
+                "Accept-Language": Lang.getLanguage()
             };
             if (type != this.TYPE_NONE && type != this.TYPE_FILE) reqHeaders["Content-Type"] = type;
 
@@ -108,16 +214,16 @@ class API {
             let reqBody = type == this.TYPE.FORM ? "" : {};
             if (body && type != this.TYPE.FILE) {
                 switch (typeof (body)) {
-                    case "string":
-                        if (body.startsWith("{") && body.endsWith("}"))
-                            body = JSON.parse(body);
+                case "string":
+                    if (body.startsWith("{") && body.endsWith("}"))
+                        body = JSON.parse(body);
                     // pas de break, pour faire le traitement "object" suivant
-                    case "object":
-                        if (type == this.TYPE_FORM)
-                            reqBody = new URLSearchParams(body).toString();
-                        else reqBody = JSON.stringify(body);
-                        break;
-                    default: break;
+                case "object":
+                    if (type == this.TYPE_FORM)
+                        reqBody = new URLSearchParams(body).toString();
+                    else reqBody = JSON.stringify(body);
+                    break;
+                default: break;
                 }
             }
 
@@ -125,8 +231,21 @@ class API {
                 reqBody = new FormData();
                 reqBody.append("model", body);
             }
-            
-            // try with / at the request end
+
+            const sendError = (err) => {
+                if (err.json) {
+                    err.json().then(data => {
+                        reject({
+                            status: err.status,
+                            message: data.message ?? 'Unknown error',
+                            field: data.field,
+                        });
+                    }).catch(err => reject(err));
+                } else {
+                    reject(err);
+                }
+            };
+
             fetch(API.API_URL + path, {
                 credentials: "omit",
                 method: method,
@@ -135,33 +254,14 @@ class API {
                 referrer: window.location.origin,
                 mode: "cors"
             }).then(response => {
-                if (response.status != 200)
-                    reject(response);
-                else {
+                if (!response.status.toString().startsWith("2")) {
+                    sendError(response);
+                } else {
                     response.json().then(data => {
                         resolve(data);
-                    }).catch(err => reject(err));
+                    }).catch(err => sendError(err));
                 }
-            }).catch(err => {
-                // is the request fails, test the same request but without "/" at the end (in case the error it just a 307 shitty redirection)
-                fetch(API.API_URL + path.replace("?", "/?"), {
-                    credentials: "omit",
-                    method: method,
-                    body: method == this.METHOD.GET ? undefined : reqBody,
-                    headers: reqHeaders,
-                    referrer: window.location.origin,
-                    mode: "cors"
-                }).then(response => {
-                    if (response.status != 200)
-                        reject(response);
-                    else {
-                        response.json().then(data => {
-                            resolve(data);
-                        }).catch(reject);
-                    }
-                }).catch(err => reject(err)).finally(() => {
-                });
-            });
+            }).catch(err => sendError(err));
         });
     }
 
@@ -175,8 +275,9 @@ class API {
      * @param {object[]} headers API call additionnal headers
      * @returns A promise resolving when the API call is done
      */
-    static execute_logged(path, method = API.METHOD.GET, credentials, body = {}, type = this.TYPE.JSON, headers = []) {
+    static execute_logged(path, method = API.METHOD.GET, body = {}, type = this.TYPE.JSON, headers = {}, user = User.CurrentUser, retryLogin = true) {
         return new Promise((resolve, reject) => {
+            const credentials = user.getCredentials();
             if (!credentials) {
                 reject({status: -1, message: "Please provide credentials (token/type or username/password)"});
                 return;
@@ -196,78 +297,30 @@ class API {
 
             if (token_mode) {
                 reqHeaders[API.AuthorizationHeader] = credentials.token;
-                this.execute(path, method, body, type, reqHeaders).then(resolve).catch(reject);
+                this.execute(path, method, body, type, reqHeaders).then(resolve).catch(err => {
+                    if (err.status === 498 || err.status === 406) { // token expired
+                        if (!retryLogin) reject({status: 400, message: "Invalid credentials"});
+                        API.execute(API.ROUTE.TOKEN(), API.METHOD.GET, undefined, undefined, { [API.AuthorizationHeader]: "Bearer " + user.refresh}).then(response => {
+                            user.setTokens(response.data.tokens);
+                            user.save();
+                            this.execute_logged(path, method, body, type, reqHeaders, user, false).then(resolve).catch(reject);
+                        }).catch(err => {
+                            User.forget();
+                            const url = window.location.href;
+                            window.location.href = '/login?link=' + url;
+                        });
+                    } else {
+                        reject(err);
+                    }
+                });
             } else {
-                this.execute(API.ROUTE.LOGIN, this.METHOD_POST, { username: credentials.username, password: credentials.password }, this.TYPE_FORM).then(data => {
-                    reqHeaders[API.AuthorizationHeader] = data;
-                    this.execute(path, method, body, type, reqHeaders).then(resolve).catch(reject);
+                if (!retryLogin) reject({status: 400, message: "Invalid credentials"});
+                this.execute(API.ROUTE.TOKEN(), this.METHOD.GET, undefined, undefined, {[API.AuthorizationHeader]: "Bearer " + user.refresh}).then(data => {
+                    user.setTokens(data.tokens);
+                    this.execute_logged(path, method, body, type, reqHeaders, user, false).then(resolve).catch(reject);
                 }).catch(err => reject(err));
             }
         });
-    }
-
-    /**
-     * Retreives all the elements from an API pagination request (User's list for example) [discouraged to use]
-     * @param {*} route API route to use (see API.ROUTES for possible routes)
-     * @param {*} progressCallback API retreive progression callback (value parameter is from 0 to 1)
-     * @param {*} logged Should the API call be logged (use User.currentUser.getCredentials() to get the current user's credentials)
-     * @param {*} pageIndex pagination index page to start from
-     * @param {*} data original data to add the pagination data to
-     * @returns A promise resolving when all the pagination data is retreived (a call to progressCallback will be done just before)
-     */
-    static retreiveAll(route, progressCallback = p=>{}, logged = false, pageIndex = 1, data = []) {
-        return new Promise((resolve, reject) => {
-            if (logged) {
-                API.execute_logged(route + API.createParameters({ page: pageIndex }), API.METHOD.GET, User.currentUser.getCredentials(), undefined, API.TYPE_JSON).then(res => {
-                    if (!res.data) reject({status: 404, message: "No data found"});
-                    progressCallback(pageIndex / res.last_page);
-                    let dataRetreived = res.current_page == res.last_page;
-                    if (!dataRetreived) {
-                        API.retreiveAll(route, progressCallback, logged, pageIndex + 1, data.concat(res.data)).then(resolve).catch(reject);
-                    }
-                    else resolve(data.concat(res.data));
-                }).catch(reject);
-            }
-            else {
-                API.execute(route + API.createParameters({ page: pageIndex }), API.METHOD.GET, undefined, API.TYPE_JSON).then(res => {
-                    if (!res.data) reject({status: 404, message: "No data found"});
-                    progressCallback(pageIndex / res.last_page);
-                    let dataRetreived = res.current_page >= res.last_page;
-                    if (!dataRetreived)
-                        API.retreiveAll(route, progressCallback, logged, pageIndex + 1, data.concat(res.data)).then(resolve).catch(reject);
-                    else resolve(data.concat(res.data));
-                }).catch(reject);
-            }
-        });
-    }
-
-    /**
-     * Creates an iterator for paginated API calls
-     * @param {*} path API route to use (see API.ROUTES for possible routes)
-     * @param {*} page Page number to start the iterator at
-     * @param {*} per_page Number of elements by page
-     * @param {*} logged Should the iterator execute API calls with logged mode
-     * @returns An object containing the current iterator's call promise and a next function that returns the next iterator object
-     */
-    static iterate(path, page = 1, per_page = 10, logged = false) {
-        let max_page = 1;
-        return {
-            promise: new Promise((resolve, reject) => {
-                API[logged?"execute_logged": "execute"](path + API.createPagination(page, per_page), API.METHOD.GET, logged ? User.currentUser.getCredentials(): undefined)
-                    .then(res => {
-                        max_page = res.last_page;
-                        resolve(res);
-                    }).catch(reject);
-            }),
-            isNext() {
-                return page < max_page;
-            },
-            next() {
-                if (page < max_page)
-                    return iterate(path, page + 1, per_page);
-                else return null;
-            }
-        };
     }
 
     /**
@@ -277,26 +330,26 @@ class API {
      */
     static createParameters(params) {
         switch (typeof (params)) {
-            case "string":
-                if (params.startsWith("?")) return params;
-                if (params.startsWith("{") && params.endsWith("}"))
-                    params = JSON.parse(params);
-            case "object":
-                return "?" + new URLSearchParams(params).toString();
-            default:
-                console.error("API Error: Error while creating parameters with argument: ", params);
-                return "";
+        case "string":
+            if (params.startsWith("?")) return params;
+            if (params.startsWith("{") && params.endsWith("}"))
+                params = JSON.parse(params);
+        case "object":
+            return "?" + new URLSearchParams(params).toString();
+        default:
+            console.error("API Error: Error while creating parameters with argument: ", params);
+            return "";
         }
     }
 
     /**
      * Creates pagination parameters from a page index and page number of elements
-     * @param {number} page index of the pagination's page
-     * @param {number} per_page number of elements in one page
+     * @param {number} offset number of elements to skip
+     * @param {number} limit number of elements in one page
      * @returns a string corresponding to the pagination's parameters part of the url
      */
-    static createPagination(page, per_page) {
-        return this.createParameters({ page: page, per_page: per_page });
+    static createPagination(offset = 0, limit = 10) {
+        return new Pagination(offset, limit);
     }
 }
 

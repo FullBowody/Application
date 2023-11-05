@@ -1,1 +1,1 @@
-{"keep_running_closed":true,"engine_refresh_rate":120}
+{"tracking.framerate":30,"tracking.smooth":true,"extensions.serverPort":5621,"extensions.serverAddress":"localhost","tracking.type":"intersection","common.closeOnExit":false,"common.shutdownOnClose":true,"tracking.rotateCamera":true,"tracking.cameraSpeed":10}

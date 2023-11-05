@@ -1,26 +1,88 @@
 <template>
-    <div class="flex grow flex-col justify-center bg-slate-700">
-        <div class="flex flex-row justify-center">
-            <div class="flex flex-col justify-start text-blue-500 text-xl">
-                <div class="flex flex-row justify-center wave">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-40">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
-                    </svg>
+    <div class="flex grow flex-col min-w-0 max-w-full p-4 overflow-x-hidden overflow-y-auto m-4">
+        <div class="mx-auto h-fit w-[40em]">
+            <div class="flex mx-auto justify-center my-4">
+                <comp-icon class="text-sky-500 w-20" />
+                <div class="flex justify-center items-center">
+                    <h1 class="text-4xl text-sky-500 font-bold text-center">
+                        <get-text :context="Lang.CreateTranslationContext('about', 'About')" />
+                    </h1>
                 </div>
-                <h1 class="text-4xl mb-10 font-bold text-center"> About FullBowody </h1>
-                <div class="flex flex-row">
-                    <div class="flex flex-col h-full w-full shadow-xl rounded-lg border border-2 border-slate-600 p-4 m-4">
-                        <h2 class="text-slate-100 text-xl font-bold text-center"> Version </h2>
-                        <div class="flex grow flex-col justify-center">
-                            <p class="text-blue-500 text-2xl font-bold text-center my-4"> 1.2.0 </p>
+            </div>
+            <div class="mb-20">
+                <div class="flex items-center space-x-4 py-2">
+                    <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
+                    <p class="text-xl font-semibold pb-2 whitespace-nowrap">
+                        <get-text :context="Lang.CreateTranslationContext('about', 'Author')" />
+                    </p>
+                    <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
+                </div>
+                <div class="flex flex-wrap items-center justify-center">
+                    <comp-card class="flex w-fit px-4 py-2 space-x-4 items-center">
+                        <fw-icon-card
+                            class="h-20 w-20"
+                            :clickable="false"
+                            :animate="false"
+                        />
+                        <div class="w-fit h-fit">
+                            <p class="pl-1 text-xl font-semibold">
+                                FurWaz
+                            </p>
+                            <button
+                                class="href"
+                                @click="() => openPage('https://furwaz.fr')"
+                            >
+                                furwaz.fr
+                            </button>
                         </div>
-                    </div>
-                    <div class="flex flex-col h-full w-full shadow-xl rounded-lg border border-2 border-slate-600 p-4 m-4">
-                        <h2 class="text-slate-100 text-xl font-bold text-center"> Author </h2>
-                        <div class="flex grow flex-col justify-center">
-                            <p v-on:click="openLink('https://github.com/FurWaz/')" class="text-blue-500 hover:text-blue-400 text-2xl font-bold text-center my-4 cursor-pointer"> FurWaz </p>
+                    </comp-card>
+                </div>
+            </div>
+            <div class="mb-20">
+                <div class="flex items-center space-x-4 py-2">
+                    <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
+                    <p class="text-xl font-semibold pb-2 whitespace-nowrap">
+                        <get-text :context="Lang.CreateTranslationContext('about', 'Thanks')" />
+                    </p>
+                    <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
+                </div>
+                <div class="flex flex-wrap items-center justify-center">
+                    <comp-card class="flex w-fit px-4 py-2 space-x-4 items-center">
+                        <cf-icon-card
+                            class="h-20 w-20"
+                            :clickable="false"
+                            :animate="false"
+                        />
+                        <div class="w-fit h-fit">
+                            <p class="pl-1 text-xl font-semibold">
+                                Cats & Foxes
+                            </p>
+                            <button
+                                class="href"
+                                @click="() => openPage('https://catsandfoxes.com')"
+                            >
+                                catsandfoxes.com
+                            </button>
                         </div>
-                    </div>
+                    </comp-card>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center space-x-4 py-2">
+                    <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
+                    <p class="text-xl font-semibold pb-2 whitespace-nowrap">
+                        <get-text :context="Lang.CreateTranslationContext('about', 'More')" />
+                    </p>
+                    <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
+                </div>
+                <div class="flex mx-auto w-fit">
+                    <get-text :context="Lang.CreateTranslationContext('about', 'MoreDesc')" />
+                    <button
+                        class="href"
+                        @click="() => openPage('https://fullbowody.projects.furwaz.fr')"
+                    >
+                        <get-text :context="Lang.CreateTranslationContext('about', 'MoreWeb')" />
+                    </button>
                 </div>
             </div>
         </div>
@@ -28,24 +90,32 @@
 </template>
 
 <script>
-import { openLink } from '../scripts/common';
+import CompIcon from "@/components/CompIcon.vue";
+import GetText from '@/components/text/GetText.vue';
+import Lang from '@/scripts/Lang';
+import CompCard from '@/components/cards/CompCard.vue';
+import FwIconCard from '@/components/cards/FwIconCard.vue';
+import CfIconCard from '@/components/cards/CfIconCard.vue';
 
 export default {
     name: "About",
-    components: {},
-    methods: { openLink },
-    setup() {},
-    mounted() {}
+    components: {
+        CompIcon,
+        GetText,
+        CompCard,
+        FwIconCard,
+        CfIconCard
+    },
+    data() {
+        return {
+            Lang
+        }
+    },
+    mounted() {},
+    methods: {
+        openPage(url) {
+            ipc.send('open-url', url);
+        }
+    }
 }
 </script>
-
-<style scoped>
-@keyframes wave {
-    0% { transform: translateY(0%); }
-    50% { transform: translateY(-10%); }
-    100% { transform: translateY(0%); }
-}
-.wave {
-    animation: wave 5s ease infinite;
-}
-</style>

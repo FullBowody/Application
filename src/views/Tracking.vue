@@ -1,84 +1,119 @@
 <template>
-    <div class="flex grow flex-row min-h-0 bg-slate-700">
-        <div class="flex flex-col w-[50%] min-w-0 min-h-0">
-            <h2 class="text-xl text-slate-300 text-center mx-auto mt-2 border-b-2 border-slate-500"> Cameras </h2>
-            <div class="flex min-h-0 grow flex-col overflow-auto">
-                <div class="flex flex-col">
-                    <camera v-for="cam in cameras" :id="cam" :onCreate="(obj) => {camerasObjs[cam] = obj}" :onDelete="() => {deleteCam(cam)}"></camera>
+    <div class="flex grow flex-col min-w-0 max-w-full">
+        <div class="flex w-full h-0 items-start z-50">
+            <comp-card class="h-fit w-64 mx-auto m-4 p-0 overflow-hidden bg-slate-50 dark:bg-slate-700">
+                <div class="flex grow relative">
+                    <div
+                        class="flex absolute w-[50%] h-full z-0 transition-all p-1"
+                        :class="viewMode === '3Dview'? '': 'translate-x-[7.9em]'"
+                    >
+                        <span class="flex grow bg-sky-500 dark:bg-sky-600 rounded-md border-2 border-sky-600 dark:border-sky-500" />
+                    </div>
+                    <button
+                        class="flex w-1/2 h-full justify-center items-center p-2 z-50"
+                        @click="setViewMode('3Dview')"
+                    >
+                        <p
+                            class="whitespace-nowrap text-ellipsis overflow-hidden transition-all"
+                            :class="viewMode === '3Dview'? 'text-slate-50 font-bold': 'text-slate-600 dark:text-slate-200 font-base'"
+                        >
+                            <get-text :context="Lang.CreateTranslationContext('tracking', '3DView')" />
+                        </p>
+                    </button>
+                    <button
+                        class="flex w-1/2 h-full justify-center items-center p-2 z-50"
+                        @click="setViewMode('Camera')"
+                    >
+                        <p
+                            class="whitespace-nowrap text-ellipsis overflow-hidden transition-all"
+                            :class="viewMode === 'Camera'? 'text-slate-50 font-bold': 'text-slate-600 dark:text-slate-200 font-base'"
+                        >
+                            <get-text :context="Lang.CreateTranslationContext('tracking', 'Cameras')" />
+                        </p>
+                    </button>
                 </div>
-                <div class="mx-auto mt-4 px-4">
-                    <flat-button :onclick="addCamera">New camera</flat-button>
-                </div>
-            </div>
-        </div>
-        <div class="flex w-[2px] bg-slate-600 rounded-lg my-4"></div>
-        <div class="flex flex-col w-[50%] min-w-0 min-h-0">
-            <h2 class="text-xl text-slate-300 text-center mx-auto mt-2 border-b-2 border-slate-500"> Preview </h2>
-            <preview></preview>
-            <div class="h-0 w-full">
-                <div class="absolute h-10 bottom-8 right-0 w-[50%]">
-                    <div class="relative flex mx-auto w-fit h-fit">
-                        <div class="bg-slate-700 border border-2 rounded-lg shadow-xl border-slate-500 px-4 py-2 cursor-pointer text-slate-300 hover:border-blue-500 hover:text-slate-100 transition-all">
-                            <p class="text-xl font-bold"> Start tracking </p>
-                        </div>
+                <div
+                    class="flex h-fit transition-all overflow-hidden px-2"
+                    :class="viewMode === 'Camera'? 'max-h-[4em]': 'max-h-[0em]'"
+                >
+                    <div class="flex w-full border-t-2 border-slate-200 dark:border-slate-600 z-50 px-2">
+                        <input-choice
+                            :label="Lang.CreateTranslationContext('tracking', 'Camera')"
+                            :list="[{name: 'Camera 1', value: 'cam1'}, {name: 'Camera 2', value: 'cam2'}]"
+                            :value="'cam1'"
+                        />
                     </div>
                 </div>
+            </comp-card>
+        </div>
+        <div class="flex grow max-h-full max-w-full">
+            <canvas id="3Dview" class="flex grow" />
+        </div>
+        <div class="flex w-full h-0 items-end z-50">
+            <div class="h-fit w-fit mx-auto m-4 p-2">
+                <comp-btnblock
+                    class="text-xl"
+                    :onclick="toggleTracking"
+                    :disabled="trackingState === TRACKING.STARTING || trackingState === TRACKING.STOPPING"
+                >
+                    <get-text
+                        class="p-2"
+                        :context="Lang.CreateTranslationContext('tracking', trackingState)"
+                    />
+                </comp-btnblock>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import Preview from './Preview.vue';
-import Camera from './Camera.vue';
-import FlatButton from '../components/FlatButton.vue';
-import Router from '../scripts/Router.js';
+import CompCard from '@/components/cards/CompCard.vue';
+import InputChoice from '@/components/inputs/InputChoice.vue';
+import GetText from '@/components/text/GetText.vue';
+import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
+import Lang from '@/scripts/Lang';
+import * as trackingView from '@/scripts/tracking';
 
-const camerasObjs = [];
-const cameras = [];
-
-let page = null;
-
-function updateCameras() {
-    Router.routes.getCameras.send().then(res => {
-        const json = JSON.parse(res);
-        cameras.splice(0, cameras.length);
-        json.forEach(camera => { cameras.push(camera); });
-        if (page != null) page.$forceUpdate();
-    }).catch(console.error);
-}
-
-function setup() {
-    updateCameras();
-}
-
-function addCamera() {
-    Router.routes.addCamera.send().then(res => {
-        updateCameras();
-    }).catch(console.error);
-}
-
-function deleteCam(id) {
-    Router.routes.removeCamera.send({id: id}).then(res => {
-        updateCameras();
-    }).catch(err => {
-        camerasObjs[id].showError(err);
-    });
+const TRACKING = {
+    STOPPED: 'StartTracking',
+    STARTED: 'StopTracking',
+    STARTING: 'StartingTracking',
+    STOPPING: 'StoppingTracking'
 }
 
 export default {
     name: "Tracking",
     components: {
-        Preview,
-        Camera,
-        FlatButton
+        CompCard,
+        InputChoice,
+        GetText,
+        CompBtnblock
     },
-    methods: { addCamera, deleteCam },
-    data() { return { cameras, camerasObjs } },
-    setup() {},
+    data() {
+        return {
+            Lang,
+            viewMode: '3Dview',
+            trackingState: TRACKING.STOPPED,
+            TRACKING
+        }
+    },
     mounted() {
-        page = this;
-        setup();
+        trackingView.setup();
+        trackingView.start();
+    },
+    methods: {
+        setViewMode(mode) {
+            this.viewMode = mode;
+        },
+        toggleTracking() {
+            if (this.trackingState === TRACKING.STARTED) {
+                this.trackingState = TRACKING.STOPPING;
+                setTimeout(() => { this.trackingState = TRACKING.STOPPED; }, 1000);
+            } else if (this.trackingState === TRACKING.STOPPED) {
+                this.trackingState = TRACKING.STARTING;
+                setTimeout(() => { this.trackingState = TRACKING.STARTED; }, 1000);
+            }
+        }
     }
 }
 </script>
