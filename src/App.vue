@@ -18,17 +18,19 @@ export default {
     components: {CompSidebar},
     methods: {},
     setup() {
-        window.addEventListener("keydown", ev => {
-            const isAlt = ev.key == 'Alt';
-            const isReload = ev.key.toLowerCase() == 'r' && ev.ctrlKey;
-            const isPanel = ev.key.toLowerCase() == 'i' && ev.ctrlKey && ev.shiftKey;
+        const devMode = import.meta.env.DEV;
 
-            if (isAlt || isReload || isPanel) {
-                //ev.preventDefault();
-            }
-        })
+        if (!devMode) {
+            window.addEventListener("keydown", ev => {
+                const isAlt = ev.key == 'Alt';
+                const isReload = ev.key.toLowerCase() == 'r' && ev.ctrlKey;
+                const isPanel = ev.key.toLowerCase() == 'i' && ev.ctrlKey && ev.shiftKey;
+
+                if (isAlt || isReload || isPanel) {
+                    ev.preventDefault();
+                }
+            });
+        }
     }
 };
 </script>
-
-<style src="./main.css" />

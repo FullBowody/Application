@@ -17,7 +17,7 @@
                 @click="$router.push(tab.path)"
                 class="text-left text-lg my-1 px-3 py-2 rounded-md outline-none transition-all border-2 border-transparent"
                 :class="
-                    $route.path == tab.path
+                    $route?.path == tab.path
                     ? 'text-slate-700 dark:text-slate-50 bg-slate-50 dark:bg-slate-700 font-semibold hover:border-slate-400 hover:dark:border-slate-600 focus:border-slate-400 focus:dark:border-slate-600'
                     : 'text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-800 font-base hover:border-slate-300 hover:dark:border-slate-700 focus:border-slate-300 focus:dark:border-slate-700'
                 "
@@ -36,7 +36,7 @@
 <script>
 import CompIcon from './CompIcon.vue';
 import CompBtnblock from './inputs/CompBtnblock.vue';
-import Lang from '@/scripts/Lang';
+import Lang from '../scripts/Lang';
 
 import {
     Cog6ToothIcon
