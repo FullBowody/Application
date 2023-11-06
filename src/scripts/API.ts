@@ -1,6 +1,8 @@
-import Lang from './Lang.js';
-import User from './User.js';
-import ROUTES from './routes.js';
+import Lang from './Lang';
+import User from './User';
+import ROUTES from './routes';
+
+type Callback = () => void;
 
 class Credentials {
     static get TYPE() {
@@ -11,11 +13,11 @@ class Credentials {
         };
     }
 
-    static fromToken(token) {
+    static fromToken(token: any) {
         return new Credentials({token: token, type: Credentials.TYPE.TOKEN});
     }
 
-    static fromCredentials(username, password) {
+    static fromCredentials(username: string, password: string) {
         return new Credentials({username: username, password: password, type: Credentials.TYPE.CREDENTIALS});
     }
 
@@ -24,7 +26,7 @@ class Credentials {
     password = "";
     type = Credentials.TYPE.UNKNOWN;
 
-    constructor(infos) {
+    constructor(infos: any) {
         this.token = infos.token ?? this.token;
         this.username = infos.username ?? this.username;
         this.password = infos.password ?? this.password;
@@ -49,6 +51,11 @@ class Credentials {
 }
 
 class Pagination {
+    _offset: number;
+    _limit: number;
+    _total: number;
+    _onChanged: Callback | null;
+
     constructor (offset = 0, limit = 10) {
         this._offset = 0;
         this._limit = 10;
@@ -118,7 +125,7 @@ class Pagination {
         return this._limit;
     }
 
-    onChanged(callback) {
+    onChanged(callback: Callback) {
         this._onChanged = callback;
     }
 
@@ -174,7 +181,7 @@ class API {
 
     static get AuthorizationHeader() { return "Authorization"; };
 
-    static setURL(url) {
+    static setURL(url: string) {
         if (!url) return;
         if (url.endsWith("/")) url = url.substring(0, url.length - 1);
         API.API_URL = url;
@@ -192,7 +199,7 @@ class API {
      * @param {object[]} headers API call additional headers
      * @returns a promise resolving when the API call is done
      */
-    static execute(path, method = this.METHOD.GET, body = {}, type = this.TYPE.JSON, headers = {}) {
+    static execute(path: string, method = this.METHOD.GET, body = {}, type = this.TYPE.JSON, headers: any = {}) {
         return new Promise((resolve, reject) => {
             if (API.API_URL == null) reject("Error : API host not set");
             path = path.replace("/?", "?").replace(/\/\//g, "/");
@@ -201,17 +208,17 @@ class API {
             let params = (urlparts.length > 0)? ("?" + urlparts.join("&")) : "";
             path = base + params;
 
-            let reqHeaders = {
+            let reqHeaders: any = {
                 "Accept": "application/json",
                 "Accept-Language": Lang.getLanguage()
             };
-            if (type != this.TYPE_NONE && type != this.TYPE_FILE) reqHeaders["Content-Type"] = type;
+            if (type != API.TYPE.NONE && type != API.TYPE.FILE) reqHeaders["Content-Type"] = type;
 
             if (headers)
                 for (let key in headers)
                     reqHeaders[key] = headers[key];
 
-            let reqBody = type == this.TYPE.FORM ? "" : {};
+            let reqBody: any = type == this.TYPE.FORM ? "" : {};
             if (body && type != this.TYPE.FILE) {
                 switch (typeof (body)) {
                 case "string":
@@ -219,7 +226,7 @@ class API {
                         body = JSON.parse(body);
                     // pas de break, pour faire le traitement "object" suivant
                 case "object":
-                    if (type == this.TYPE_FORM)
+                    if (type == this.TYPE.FORM)
                         reqBody = new URLSearchParams(body).toString();
                     else reqBody = JSON.stringify(body);
                     break;
@@ -232,15 +239,15 @@ class API {
                 reqBody.append("model", body);
             }
 
-            const sendError = (err) => {
+            const sendError = (err: any) => {
                 if (err.json) {
-                    err.json().then(data => {
+                    err.json().then((data: any) => {
                         reject({
                             status: err.status,
                             message: data.message ?? 'Unknown error',
                             field: data.field,
                         });
-                    }).catch(err => reject(err));
+                    }).catch((err: Error) => reject(err));
                 } else {
                     reject(err);
                 }
@@ -275,13 +282,19 @@ class API {
      * @param {object[]} headers API call additionnal headers
      * @returns A promise resolving when the API call is done
      */
-    static execute_logged(path, method = API.METHOD.GET, body = {}, type = this.TYPE.JSON, headers = {}, user = User.CurrentUser, retryLogin = true) {
+    static execute_logged(path: string, method = API.METHOD.GET, body = {}, type = this.TYPE.JSON, headers: any = {}, user = User.CurrentUser, retryLogin = true) {
         return new Promise((resolve, reject) => {
+            if (!user) {
+                reject({status: -1, message: "Please provide a user to execute the request"});
+                return;
+            }
+
             const credentials = user.getCredentials();
             if (!credentials) {
                 reject({status: -1, message: "Please provide credentials (token/type or username/password)"});
                 return;
             }
+
             const token_mode = (credentials.token != undefined)
             const login_mode = (credentials.password != undefined && credentials.username != undefined)
 
@@ -290,7 +303,7 @@ class API {
                 return;
             }
 
-            let reqHeaders = {};
+            let reqHeaders: any = {};
             if (headers)
                 for (let key in headers)
                     reqHeaders[key] = headers[key];
@@ -300,7 +313,7 @@ class API {
                 this.execute(path, method, body, type, reqHeaders).then(resolve).catch(err => {
                     if (err.status === 498 || err.status === 406) { // token expired
                         if (!retryLogin) reject({status: 400, message: "Invalid credentials"});
-                        API.execute(API.ROUTE.TOKEN(), API.METHOD.GET, undefined, undefined, { [API.AuthorizationHeader]: "Bearer " + user.refresh}).then(response => {
+                        API.execute(API.ROUTE.TOKEN(), API.METHOD.GET, undefined, undefined, { [API.AuthorizationHeader]: "Bearer " + user.refresh}).then((response: any) => {
                             user.setTokens(response.data.tokens);
                             user.save();
                             this.execute_logged(path, method, body, type, reqHeaders, user, false).then(resolve).catch(reject);
@@ -315,7 +328,7 @@ class API {
                 });
             } else {
                 if (!retryLogin) reject({status: 400, message: "Invalid credentials"});
-                this.execute(API.ROUTE.TOKEN(), this.METHOD.GET, undefined, undefined, {[API.AuthorizationHeader]: "Bearer " + user.refresh}).then(data => {
+                this.execute(API.ROUTE.TOKEN(), this.METHOD.GET, undefined, undefined, {[API.AuthorizationHeader]: "Bearer " + user.refresh}).then((data: any) => {
                     user.setTokens(data.tokens);
                     this.execute_logged(path, method, body, type, reqHeaders, user, false).then(resolve).catch(reject);
                 }).catch(err => reject(err));
@@ -328,7 +341,7 @@ class API {
      * @param {object} params key-value pairs of parameters to add to the url
      * @returns string corresponding to the query parameters part of the url
      */
-    static createParameters(params) {
+    static createParameters(params: any) {
         switch (typeof (params)) {
         case "string":
             if (params.startsWith("?")) return params;
@@ -353,5 +366,4 @@ class API {
     }
 }
 
-window.API = API; // for debug purposes
 export default API;

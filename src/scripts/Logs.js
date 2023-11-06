@@ -1,4 +1,4 @@
-import Lang from "./Lang.js";
+import Lang from "./Lang.ts";
 import { applyClasses } from "./dom.js";
 
 let LogIdCounter = 0;

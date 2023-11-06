@@ -1,8 +1,7 @@
 import API from "./API";
 
 class User {
-    /** @type {User} */
-    static #currentUser = null;
+    static #currentUser: User | null = null;
     static get CurrentUser() {
         return User.#currentUser || User.fromLocalStorage();
     }
@@ -38,29 +37,29 @@ class User {
     refresh = "";
     access = "";
 
-    constructor(infos) {
+    constructor(infos: any) {
         this.setInformations(infos);
         User.#currentUser = this;
     }
 
-    setInformations(infos) {
+    setInformations(infos: any) {
         if (!infos) return;
         for (const prop of User.props) {
-            if (this[prop] != infos[prop] && infos[prop] !== undefined) {
-                this[prop] = infos[prop];
+            if ((this as any)[prop] != infos[prop] && infos[prop] !== undefined) {
+                (this as any)[prop] = infos[prop];
             }
         }
     }
 
-    setTokens(tokens) {
+    setTokens(tokens: any) {
         this.refresh = tokens.refresh ?? this.refresh;
         this.access = tokens.access ?? this.access;
     }
 
     save() {
-        const userInfos = {};
+        const userInfos: any = {};
         for (const prop of User.props) {
-            userInfos[prop] = this[prop];
+            userInfos[prop] = (this as any)[prop];
         }
         localStorage.setItem("user", JSON.stringify(userInfos));
         User.#currentUser = this;
@@ -71,5 +70,4 @@ class User {
     }
 }
 
-window.User = User; // for debug
 export default User;

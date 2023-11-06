@@ -97,6 +97,7 @@ import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
 import '@/scripts/portal.min.js';
 import CompCard from '@/components/cards/CompCard.vue';
 import CompBtntext from '@/components/inputs/CompBtntext.vue';
+import API from '../scripts/API';
 
 export default {
     name: "Account",
@@ -130,12 +131,12 @@ export default {
                 const response = await API.execute(API.ROUTE.REGISTER(token));
                 const user = new User(response.data);
                 user.save();
-                this.$router.go();
+                this.$forceUpdate();
             } catch (err) { console.error(err); }
         },
         logout() {
             User.forget();
-            this.$router.go();
+            this.$forceUpdate();
         },
         openAddonsPage() {
             ipc.send('open-url', 'https://fullbowody.projects.furwaz.fr/addons');

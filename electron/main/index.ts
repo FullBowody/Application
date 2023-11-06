@@ -33,8 +33,8 @@ const indexHtml = join(process.env.DIST, 'index.html')
 
 async function createWindow() {
   win = new BrowserWindow({
-    title: 'Main window',
-    icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
+    title: 'FullBowody',
+    icon: join(process.env.VITE_PUBLIC, 'logo.png'),
     width: 1280,
     height: 720,
     webPreferences: {
@@ -45,6 +45,7 @@ async function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
     },
+    autoHideMenuBar: true
   })
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298

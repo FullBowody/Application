@@ -1,45 +1,55 @@
+interface TranslationFile {
+    [key: string]: string | string[];
+};
+interface TranslationContext {
+    file: string;
+    code: string;
+    format?: Record<string, string>;
+};
+type Callback = (a: any)=>void;
+
 export default class Lang {
-    static #browserLanguageCode = null;
+    static #browserLanguageCode?: string;
     static #fallbackLanguageCode = "en";
-    static #translationFilesRootFolder = "/langs";
+    static #translationFilesRootFolder = import.meta.env.DEV ? "/langs" : "./langs";
 
-    static #fetchedTranslationFiles = {};
-    static #onlanguageChangeEvents = [];
-    static #pendingTranslationFilesRequest = {};
+    static #fetchedTranslationFiles: Record<string, TranslationFile> = {};
+    static #onlanguageChangeEvents: Callback[] = [];
+    static #pendingTranslationFilesRequest: Record<string, Promise<TranslationFile>> = {};
 
-    static async #getTranslationFile(filePath) {
+    static async #getTranslationFile(filePath: string) {
         if (this.#fetchedTranslationFiles[filePath] === null)
             return null;
         if (this.#fetchedTranslationFiles[filePath] !== undefined) {
             return this.#fetchedTranslationFiles[filePath];
         }
 
-        if (this.#pendingTranslationFilesRequest[filePath]) {
+        if (this.#pendingTranslationFilesRequest.hasOwnProperty(filePath)) {
             return await this.#pendingTranslationFilesRequest[filePath];
         }
 
-        let resolveCallback = null;
+        let resolveCallback: any = null;
         this.#pendingTranslationFilesRequest[filePath] = new Promise((resolve, reject) => { resolveCallback = resolve; });
 
         const data = await fetch(filePath);
         try {
-            const json = await data.json();
+            const json: TranslationFile = await data.json();
             this.#fetchedTranslationFiles[filePath] = json;
             resolveCallback?.(json);
             return json;
         } catch {
-            this.#fetchedTranslationFiles[filePath] = null;
+            delete this.#fetchedTranslationFiles[filePath];
             resolveCallback?.(null);
             return null;
         }
     }
 
-    static #getFilePath(language, file) {
+    static #getFilePath(language: string, file: string) {
         return `${this.#getTranslationFilesRootFolder()}/${language}/${file}.json`
     }
 
-    static #sanitizeLanguageCode(code) {
-        if (!code) return null;
+    static #sanitizeLanguageCode(code: string) {
+        if (!code) return undefined;
         if (code.length > 2) code = code.split("-")[0];
         if (code.length > 2) code = code.substring(0, 2);
         return code.toLowerCase();
@@ -53,10 +63,10 @@ export default class Lang {
         return this.#fallbackLanguageCode;
     }
 
-    static #setSavedLanguageCode(code) {
+    static #setSavedLanguageCode(code?: string) {
         if (!code) localStorage.removeItem("lang");
         else localStorage.setItem("lang", code);
-        this.#onlanguageChangeEvents.forEach(callback => callback(code));
+        this.#onlanguageChangeEvents.forEach((callback: Callback) => callback(code));
     }
 
     static #getSavedLanguageCode() {
@@ -64,7 +74,7 @@ export default class Lang {
     }
 
     static #retreiveBrowserLanguageCode() {
-        this.#setBrowserLanguageCode(this.#sanitizeLanguageCode(navigator.language || navigator.userLanguage))
+        this.#setBrowserLanguageCode(this.#sanitizeLanguageCode((navigator as any).language || (navigator as any).userLanguage))
     }
 
     static #getBrowserLanguageCode() {
@@ -73,11 +83,11 @@ export default class Lang {
         return this.#browserLanguageCode;
     }
 
-    static #setBrowserLanguageCode(code) {
+    static #setBrowserLanguageCode(code?: string) {
         this.#browserLanguageCode = code;
     }
 
-    static #getFormatedText(text, format) {
+    static #getFormatedText(text: string, format?: Record<string, string>) {
         if (!format) return text;
         for (const key in format) {
             if (text.includes(`{${key}}`))
@@ -86,7 +96,7 @@ export default class Lang {
         return text;
     }
 
-    static #processTranslation(translation) {
+    static #processTranslation(translation: string|Array<string>) {
         if (typeof translation === "string") return translation;
         if (Array.isArray(translation)) return translation.join("\n");
         return JSON.stringify(translation);
@@ -104,15 +114,15 @@ export default class Lang {
         return this.#getSavedLanguageCode() ?? this.#getBrowserLanguageCode() ?? this.#getFallbackLanguageCode();
     }
 
-    static setLanguage(value) {
+    static setLanguage(value: string) {
         this.#setSavedLanguageCode(this.#sanitizeLanguageCode(value));
     }
 
-    static registerOnLanguageChange(callback) {
+    static registerOnLanguageChange(callback: Callback) {
         this.#onlanguageChangeEvents.push(callback);
     }
 
-    static async TranslateAsync(context) {
+    static async TranslateAsync(context: TranslationContext) {
         if (!this.isValidContext(context)) {
             console.error("Invalid translation context : ", context);
             return null;
@@ -130,7 +140,7 @@ export default class Lang {
 
         console.error(
             "Translation not found for code [" + context.code + "] in file : [" + context.file + "]\n" +
-            "Language : [" + this.Language + "]\n" +
+            "Language : [" + this.getLanguage() + "]\n" +
             "Fallback language : [" + this.#getFallbackLanguageCode() + "]\n" +
             "Translation file : [" + filePath + "]\n" +
             "Fallback translation file : [" + fallbackFilePath + "]\n"
@@ -138,22 +148,22 @@ export default class Lang {
         return null;
     }
 
-    static async GetTextAsync(context) {
+    static async GetTextAsync(context: TranslationContext) {
         if (!context) return null;
         const translation = await this.TranslateAsync(context);
         if (!translation) return null;
         return this.#getFormatedText(translation, context.format);
     }
 
-    static GetText(context, callback) {
+    static GetText(context: TranslationContext, callback: Callback) {
         this.GetTextAsync(context).then(callback);
     }
 
-    static CreateTranslationContext(file, code, format) {
-        return {file, code, format: format ?? undefined};
+    static CreateTranslationContext(file: string, code: string, format?: Record<string, string>) {
+        return {file, code, format: format ?? undefined} as TranslationContext;
     }
 
-    static isValidContext(context) {
+    static isValidContext(context: TranslationContext) {
         return context && context.file && context.code;
     }
 }
