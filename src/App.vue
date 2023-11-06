@@ -23,7 +23,7 @@ export default {
         if (!devMode) {
             window.addEventListener("keydown", ev => {
                 const isAlt = ev.key == 'Alt';
-                const isReload = ev.key.toLowerCase() == 'r' && ev.ctrlKey;
+                const isReload = (ev.key.toLowerCase() == 'r' || ev.key.toLowerCase() == 'w') && ev.ctrlKey;
                 const isPanel = ev.key.toLowerCase() == 'i' && ev.ctrlKey && ev.shiftKey;
 
                 if (isAlt || isReload || isPanel) {
