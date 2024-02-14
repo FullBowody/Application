@@ -1,0 +1,20 @@
+{
+    "Cameras": "Cameras",
+    "Camera": "Camera",
+    "Settings": "Settings",
+    "Add": "Add a camera",
+    "NoCameras": "No cameras",
+    "NoCamerasDesc": "Click on the button below to add a camera",
+    "StreamUrl": "Stream url",
+    "IPAddr": "IP address",
+    "Webcam": "Webcam",
+    "WebStream": "Web stream",
+    "FullBowody": "FullBowody",
+    "Type": "Type",
+    "Preview": "Preview",
+    "Informations": "Informations",
+    "Resolution": "Resolution:",
+    "Framerate": "Framerate:",
+    "Position": "Position:",
+    "Rotation": "Rotation:"
+}
