@@ -13,12 +13,12 @@
                 <div class="flex items-center space-x-4 py-2">
                     <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
                     <p class="text-xl font-semibold pb-2 whitespace-nowrap">
-                        <get-text :context="Lang.CreateTranslationContext('about', 'Author')" />
+                        <get-text :context="Lang.CreateTranslationContext('about', 'Authors')" />
                     </p>
                     <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
                 </div>
-                <div class="flex flex-wrap items-center justify-center">
-                    <comp-card class="flex w-fit px-4 py-2 space-x-4 items-center">
+                <div class="flex flex-wrap items-center justify-evenly">
+                    <comp-card class="flex w-[45%] px-4 py-2 space-x-4 items-center">
                         <fw-icon-card
                             class="h-20 w-20"
                             :clickable="false"
@@ -36,6 +36,24 @@
                             </button>
                         </div>
                     </comp-card>
+                    <comp-card class="flex w-[45%] px-4 py-2 space-x-4 items-center">
+                        <tb-icon-card
+                            class="h-20 w-20"
+                            :clickable="false"
+                            :animate="false"
+                        />
+                        <div class="w-fit h-fit">
+                            <p class="pl-1 text-xl font-semibold">
+                                Toxicbloud
+                            </p>
+                            <button
+                                class="href"
+                                @click="() => openPage('https://antoninrousseau.fr')"
+                            >
+                                antoninrousseau.fr
+                            </button>
+                        </div>
+                    </comp-card>
                 </div>
             </div>
             <div class="mb-20">
@@ -46,8 +64,8 @@
                     </p>
                     <span class="h-1 w-full bg-slate-200 dark:bg-slate-600 rounded-xl" />
                 </div>
-                <div class="flex flex-wrap items-center justify-center">
-                    <comp-card class="flex w-fit px-4 py-2 space-x-4 items-center">
+                <div class="flex flex-wrap items-center justify-evenly">
+                    <comp-card class="flex w-[45%] px-4 py-2 space-x-4 items-center">
                         <cf-icon-card
                             class="h-20 w-20"
                             :clickable="false"
@@ -96,6 +114,7 @@ import Lang from '@/scripts/Lang';
 import CompCard from '@/components/cards/CompCard.vue';
 import FwIconCard from '@/components/cards/FwIconCard.vue';
 import CfIconCard from '@/components/cards/CfIconCard.vue';
+import TbIconCard from '@/components/cards/TbIconCard.vue';
 
 export default {
     name: "About",
@@ -104,7 +123,8 @@ export default {
         GetText,
         CompCard,
         FwIconCard,
-        CfIconCard
+        CfIconCard,
+        TbIconCard
     },
     data() {
         return {

@@ -16,7 +16,7 @@
 
 <script>
 export default {
-    name: "FwIconCard",
+    name: "CfIconCard",
     props: {
         clickable: {
             type: Boolean,
@@ -28,14 +28,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.hover-bands:hover :nth-child(1) { transform: translateY(5%); }
-.hover-bands       :nth-child(1) { transform: translateY(0%); }
-.hover-bands:hover :nth-child(2) { transform: translateY(-5%); }
-.hover-bands       :nth-child(2) { transform: translateY(0%); }
-.hover-bands:hover :nth-child(3) { transform: translateY(5%); }
-.hover-bands       :nth-child(3) { transform: translateY(0%); }
-.hover-bands:hover :nth-child(4) { transform: translateY(-5%); }
-.hover-bands       :nth-child(4) { transform: translateY(0%); }
-</style>
