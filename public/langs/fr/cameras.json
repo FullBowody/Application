@@ -1,5 +1,20 @@
 {
-    "Cameras": "Cameras",
-    "Settings": "Settings",
-    "Add": "Add camera"
+    "Cameras": "Caméras",
+    "Camera": "Caméra",
+    "Settings": "Paramètres",
+    "Add": "Ajouter une caméra",
+    "NoCameras": "Aucune caméra",
+    "NoCamerasDesc": "Cliquez sur le bouton ci-dessus pour ajouter une caméra",
+    "StreamUrl": "URL du flux",
+    "IPAddr": "Adresse IP",
+    "Webcam": "Webcam",
+    "WebStream": "Flux web",
+    "FullBowody": "FullBowody",
+    "Type": "Type",
+    "Preview": "Aperçu",
+    "Informations": "Informations",
+    "Resolution": "Résolution :",
+    "Framerate": "Rafraîchissement :",
+    "Position": "Position :",
+    "Rotation": "Rotation :"
 }

@@ -123,6 +123,8 @@ export default class Lang {
     }
 
     static async TranslateAsync(context: TranslationContext) {
+        if (typeof(context) === "string") return Promise.resolve(context);
+
         if (!this.isValidContext(context)) {
             console.error("Invalid translation context : ", context);
             return null;
