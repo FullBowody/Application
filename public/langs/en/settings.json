@@ -21,6 +21,8 @@
     "Extensions": "Extensions",
     "ServerPort": "Server port",
     "ServerAddress": "Server address",
+    "Advanced": "Advanced",
+    "EngineFolder": "FullBowody engine folder",
     "SaveTitle": "You changed some settings",
     "UnknownErrorSaving": "Oops, an unknown error occured :(",
     "ErrorSaving": "Oops, an error occured :\n"

@@ -113,5 +113,21 @@ export const settings = [
                 save: (value) => { saveSetting('extensions.serverAddress', value) }
             }
         ]
+    },
+    {
+        name: 'Advanced',
+        settings: [
+            {
+                name: 'EngineFolder',
+                type: 'string',
+                value: () => getSetting('advanced.engineFolder') ?? "",
+                onchange: (value) => {},
+                save: (value) => {
+                    console.log("change-engine-folder", value)
+                    ipc.send("change-engine-folder", value);
+                    saveSetting('advanced.engineFolder', value);
+                }
+            }
+        ]
     }
 ];

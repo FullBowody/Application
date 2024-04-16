@@ -13,6 +13,7 @@
 
 <script>
 import CompSidebar from './components/CompSidebar.vue';
+import { getSetting } from './scripts/settings';
 export default {
     name: "App",
     components: {CompSidebar},
@@ -20,6 +21,7 @@ export default {
     setup() {
         const devMode = import.meta.env.DEV;
 
+        // disabled dev tools in production
         if (!devMode) {
             window.addEventListener("keydown", ev => {
                 const isAlt = ev.key == 'Alt';
@@ -31,6 +33,10 @@ export default {
                 }
             });
         }
+
+        // load engine from settings folder
+        const engineFolder = getSetting('advanced.engineFolder');
+        if (engineFolder) ipc.send("change-engine-folder", engineFolder);
     },
     mounted() {
         this.$router.push({name: 'Home'});

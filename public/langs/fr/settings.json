@@ -21,6 +21,8 @@
     "Extensions": "Extensions",
     "ServerPort": "Port du serveur",
     "ServerAddress": "Adresse du serveur",
+    "Advanced": "Avancé",
+    "EngineFolder": "Dossier du moteur FullBowody",
     "SaveTitle": "Vous avez changé des paramètres",
     "UnknownErrorSaving": "Oups, une erreur inconnue est survenue :(",
     "ErrorSaving": "Oups, une erreur est survenue :\n"
