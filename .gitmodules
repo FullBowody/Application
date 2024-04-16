@@ -1,0 +1,3 @@
+[submodule "dependencies/wrapper"]
+	path = dependencies/wrapper
+	url = https://github.com/fullbowody/Node-wrapper
