@@ -11,12 +11,10 @@ the [FullBowody Engine](https://github.com/FullBowody/Engine).
 - The application is packaged using [electron-builder](https://www.electron.build/).
 
 ## Setup the project
-To setup the entire project, run the following command:
+To install necessary dependencies, run
 ```bash
 npm install
 ```
-Make sure the FullBowody 's Engine addon is located in the `src/server/Core/build` folder,
-with the FullBowody 's Engine bridge located in the `src/server/Core/bridge` folder.
 
 ## Run and debug the project
 To run the project in a electron window 

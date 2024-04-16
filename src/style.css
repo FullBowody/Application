@@ -102,3 +102,14 @@
     opacity: 0;
     animation: hide-right 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
 }
+
+@keyframes debug {
+    0%, 100% { border-color: red; }
+    33% { border-color: blue; }
+    66% { border-color: green; }
+}
+
+.debug {
+    animation: debug 2s infinite;
+    @apply border;
+}

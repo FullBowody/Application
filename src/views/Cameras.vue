@@ -8,7 +8,7 @@
                 <div class="flex flex-col items-center space-y-4">
                     <comp-card
                         v-if="cameras.length === 0"
-                        class="p-4"
+                        class="p-4 bg-slate-200 dark:bg-slate-600"
                     >
                         <p class="text-center text-lg font-semibold">
                             <get-text :context="Lang.CreateTranslationContext('cameras', 'NoCameras')" />
@@ -21,8 +21,9 @@
                     <comp-card
                         v-for="(camera, index) in cameras"
                         :key="index"
+                        :override-border="true"
                         class="show-down flex flex-col p-4 pb-3 max-w-full w-[30em] space-y-2 transition-all"
-                        :class="selectedCamera == camera ? 'border-sky-500 dark:border-sky-500' : 'border-slate-300 dark:border-slate-600'"
+                        :class="selectedCamera == camera ? 'border-sky-500 dark:border-sky-700' : 'border-slate-300 dark:border-slate-600'"
                     >
                         <div class="flex flex-col w-full h-fit">
                             <div class="flex w-full h-fit justify-between items-center">
@@ -41,7 +42,7 @@
                                     </button>
                                     <button
                                         class="flex justify-center items-center w-fit"
-                                        @click="() => cameras.splice(index, 1)"
+                                        @click="() => { cameras.splice(index, 1); if (selectedCamera == camera) selectedCamera = null; }"
                                     >
                                         <x-mark-icon
                                             class="w-6 cursor-pointer transition-all hover:text-red-500 dark:hover:text-red-500"
@@ -162,17 +163,20 @@
             :class="selectedCamera ? 'w-full' : 'w-0'"
         >
             <span class="h-full w-1 rounded-xl bg-slate-200 dark:bg-slate-600 mx-4" />
-            <div class="flex grow">
-                <div class="flex grow h-fit">
+            <div class="flex grow flex-col">
+                <div class="flex h-min">
                     <p class="w-full text-center text-2xl font-semibold">
                         <get-text :context="Lang.CreateTranslationContext('cameras', 'Settings')" />
                     </p>
                     <button
-                        class="flex justify-center items-center rounded-md p-1 transition-all hover:bg-slate-200 dark:hover:bg-slate-600"
+                        class="flex h-fit justify-center items-center rounded-md p-1 transition-all hover:bg-slate-200 dark:hover:bg-slate-600"
                         @click="selectedCamera = null"
                     >
-                        <x-mark-icon class="w-6"/>
+                        <x-mark-icon class="w-6 h-6"/>
                     </button>
+                </div>
+                <div class="flex grow">
+                    <!-- settings content -->
                 </div>
             </div>
         </div>

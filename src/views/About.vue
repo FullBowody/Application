@@ -36,24 +36,6 @@
                             </button>
                         </div>
                     </comp-card>
-                    <comp-card class="flex w-[45%] px-4 py-2 space-x-4 items-center">
-                        <tb-icon-card
-                            class="h-20 w-20"
-                            :clickable="false"
-                            :animate="false"
-                        />
-                        <div class="w-fit h-fit">
-                            <p class="pl-1 text-xl font-semibold">
-                                Toxicbloud
-                            </p>
-                            <button
-                                class="href"
-                                @click="() => openPage('https://antoninrousseau.fr')"
-                            >
-                                antoninrousseau.fr
-                            </button>
-                        </div>
-                    </comp-card>
                 </div>
             </div>
             <div class="mb-20">
@@ -80,6 +62,24 @@
                                 @click="() => openPage('https://catsandfoxes.com')"
                             >
                                 catsandfoxes.com
+                            </button>
+                        </div>
+                    </comp-card>
+                    <comp-card class="flex w-[45%] px-4 py-2 space-x-4 items-center">
+                        <tb-icon-card
+                            class="h-20 w-20"
+                            :clickable="false"
+                            :animate="false"
+                        />
+                        <div class="w-fit h-fit">
+                            <p class="pl-1 text-xl font-semibold">
+                                Toxicbloud
+                            </p>
+                            <button
+                                class="href"
+                                @click="() => openPage('https://antoninrousseau.fr')"
+                            >
+                                antoninrousseau.fr
                             </button>
                         </div>
                     </comp-card>
