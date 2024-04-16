@@ -122,10 +122,11 @@ export const settings = [
                 type: 'string',
                 value: () => getSetting('advanced.engineFolder') ?? "",
                 onchange: (value) => {},
-                save: (value) => {
-                    console.log("change-engine-folder", value)
-                    ipc.send("change-engine-folder", value);
+                save: async (value) => {
                     saveSetting('advanced.engineFolder', value);
+                    const success = await ipc.invoke("change-engine-folder", value);
+                    // TODO : handle error with notification
+                    // (create a notification system [state:loading/success/error/warning, title+icon+desc, notificationId for content updates, etc...])
                 }
             }
         ]

@@ -102,10 +102,10 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.on('change-engine-folder', (_, arg) => {
-    console.log("loading engine from folder: ", arg);
-    const res = EngineHandle.SetEngineFolder(arg);
-    console.log("engine loaded: ", res);
+ipcMain.handle('change-engine-folder', async (event, ...args) => {
+    return new Promise<boolean>((resolve, reject) => {
+        resolve(EngineHandle.SetEngineFolder(args[0]));
+    });
 });
 
 // New window example arg: new windows url
