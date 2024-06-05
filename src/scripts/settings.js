@@ -63,20 +63,25 @@ export const settings = [
                 value: () => getSetting('tracking.smooth') ?? true,
                 onchange: (value) => {},
                 save: (value) => { saveSetting('tracking.smooth', value) }
-            },
+            }
+        ]
+    },
+    {
+        name: 'Scene',
+        settings: [
             {
                 name: 'RotateCamera',
                 type: 'boolean',
-                value: () => getSetting('tracking.rotateCamera') ?? true,
+                value: () => getSetting('scene.rotateCamera') ?? true,
                 onchange: (value) => {},
-                save: (value) => { saveSetting('tracking.rotateCamera', value) },
+                save: (value) => { saveSetting('scene.rotateCamera', value) },
                 settings: [
                     {
                         name: 'CameraSpeed',
                         type: 'number',
-                        value: () => getSetting('tracking.cameraSpeed') ?? 10,
+                        value: () => getSetting('scene.cameraSpeed') ?? 10,
                         onchange: (value) => {},
-                        save: (value) => { saveSetting('tracking.cameraSpeed', value) }
+                        save: (value) => { saveSetting('scene.cameraSpeed', value) }
                     }
                 ],
                 condition: (setting) => setting.inputValue === undefined ? setting.value() : setting.inputValue

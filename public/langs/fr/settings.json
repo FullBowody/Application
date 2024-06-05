@@ -1,5 +1,6 @@
 {
     "Title": "Paramètres",
+    
     "Common": "Général",
     "Theme": "Thème",
     "Light": "Clair",
@@ -8,21 +9,24 @@
     "English": "Anglais",
     "French": "Français",
     "Auto": "Auto",
+
     "ShutdownOnClose": "Éteindre à la fermeture",
+
     "Tracking": "Suivi",
     "Framerate": "Fréquence de suivi",
     "Smooth": "Fluidifier le suivi",
-    "TrackingType": "Type de suivi",
-    "TypeAIGuess": "Estimation IA",
-    "TypeIntersections": "Intersections",
-    "TypeCombined": "Combiné",
+    
+    "Scene": "Scène",
     "RotateCamera": "Rotation de la caméra",
     "CameraSpeed": "Vitesse de la caméra",
+
     "Listeners": "Écouteurs",
     "ServerPort": "Port du serveur",
     "ServerAddress": "Adresse du serveur",
+
     "Advanced": "Avancé",
     "EnginePath": "Chemin vers le moteur FullBowody",
+
     "SaveTitle": "Vous avez changé des paramètres",
     "UnknownErrorSaving": "Oups, une erreur inconnue est survenue :(",
     "ErrorSaving": "Oups, une erreur est survenue :\n"

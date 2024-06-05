@@ -2,6 +2,8 @@
     "3DView": "3D View",
     "Cameras": "Cameras",
     "Camera": "Camera",
+    "Trackers": "Trackers",
+    "Tracker": "Tracker",
     "StartTracking": "Start Tracking",
     "StopTracking": "Stop Tracking",
     "StartingTracking": "Starting Tracking...",

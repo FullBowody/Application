@@ -2,6 +2,8 @@
     "3DView": "Vue 3D",
     "Cameras": "Cameras",
     "Camera": "Camera",
+    "Trackers": "Traqueurs",
+    "Tracker": "Traqueur",
     "StartTracking": "Commencer le suivi",
     "StopTracking": "Arrêter le suivi",
     "StartingTracking": "Démarrage du suivi ...",

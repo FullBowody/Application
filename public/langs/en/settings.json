@@ -1,5 +1,6 @@
 {
     "Title": "Settings",
+    
     "Common": "Common",
     "Theme": "Theme",
     "Light": "Light",
@@ -8,21 +9,24 @@
     "English": "English",
     "French": "French",
     "Auto": "Auto",
+    
     "ShutdownOnClose": "Shutdown on close",
+
     "Tracking": "Tracking",
     "Framerate": "Tracking framerate",
     "Smooth": "Smooth tracking",
-    "TrackingType": "Tracking type",
-    "TypeAIGuess": "AI Guess",
-    "TypeIntersections": "Intesections",
-    "TypeCombined": "Combined",
+
+    "Scene": "Scene",
     "RotateCamera": "Rotate camera",
     "CameraSpeed": "Camera speed",
+
     "Listeners": "Listeners",
     "ServerPort": "Server port",
     "ServerAddress": "Server address",
+
     "Advanced": "Advanced",
     "EnginePath": "Path towards FullBowody engine",
+
     "SaveTitle": "You changed some settings",
     "UnknownErrorSaving": "Oops, an unknown error occured :(",
     "ErrorSaving": "Oops, an error occured :\n"

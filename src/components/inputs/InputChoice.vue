@@ -1,6 +1,9 @@
 <template>
     <div class="flex h-fit w-full justify-between md:space-x-8 space-x-4 items-center my-2 min-w-0 max-w-full">
-        <label class="flex text-md text-slate-600 dark:text-slate-200 font-semibold whitespace-nowrap text-ellipsis w-fit max-w-full min-w-0">
+        <label
+            v-if="label != ''"
+            class="flex text-md text-slate-600 dark:text-slate-200 font-semibold whitespace-nowrap text-ellipsis w-fit max-w-full min-w-0"
+        >
             <get-text :context="label" />
         </label>
         <div class="min-w-0 max-w-full">
@@ -10,9 +13,9 @@
                 :name="name"
                 :value="value"
                 :disabled="disabled"
-                class="flex h-8 border-2 rounded-md px-2 py-1 border-slate-200 dark:border-slate-500 font-semibold text-sm whitespace-nowrap max-w-full
+                class="flex h-fit border-2 rounded-md px-2 py-1 border-slate-200 dark:border-slate-500 font-semibold whitespace-nowrap max-w-full
                        min-w-0 text-ellipsis transition-colors outline-none placeholder-slate-600/[0.5]"
-                :class="disabled ? ' bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-400 ' : ' bg-white dark:bg-slate-600 text-slate-600 dark:text-slate-200 hover:border-slate-300 hover:dark:border-slate-400 focus:border-slate-300 focus:dark:border-slate-400 '"
+                :class="classes + (disabled ? ' bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-400 ' : ' bg-white dark:bg-slate-600 text-slate-600 dark:text-slate-200 hover:border-slate-300 hover:dark:border-slate-400 focus:border-slate-300 focus:dark:border-slate-400 ')"
                 @change="onchange"
             >
                 <option
@@ -90,6 +93,10 @@ export default {
             type: Boolean,
             default: false,
             required: false
+        },
+        classes: {
+            type: String,
+            default: ""
         }
     },
     data() {

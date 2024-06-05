@@ -9,12 +9,12 @@
         <!-- [END] 3D VIEW -->
 
         <!-- [START] FLOATING UI -->
-        <div class="flex absolute w-full h-full items-start z-50 pointer-events-none">
+        <div class="flex absolute w-full h-full items-start z-50 pointer-events-none"> <!-- view selector -->
             <div class="mx-auto m-4 pointer-events-auto">
                 <comp-vue-selector />
             </div>
         </div>
-        <div class="flex absolute w-full h-full items-end z-50 pointer-events-none">
+        <div class="flex absolute w-full h-full items-end z-50 pointer-events-none"> <!-- tracking button -->
             <div class="mx-auto m-4 pointer-events-auto">
                 <comp-btnblock
                     class="text-xl"
@@ -28,6 +28,15 @@
                 </comp-btnblock>
             </div>
         </div>
+        <div class="flex absolute w-full h-full items-start z-50 pointer-events-none"> <!-- add dropdown -->
+            <div class="mr-auto m-4 pointer-events-auto">
+                <input-choice
+                    :list="addOptions"
+                    :value="'--add'"
+                    :onchange="onAdd"
+                />
+            </div>
+        </div>
         <!-- [END] FLOATING UI -->
     </div>
 </template>
@@ -35,9 +44,15 @@
 <script>
 import GetText from '@/components/text/GetText.vue';
 import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
+import InputChoice from '@/components/inputs/InputChoice.vue';
 import CompVueSelector from '@/components/scene/CompVueSelector.vue';
 import Lang from '@/scripts/Lang';
-import * as trackingView from '@/scripts/tracking';
+import * as renderer from '@/scripts/3Drenderer';
+import scene from '@/scripts/scene.ts';
+
+import {
+    PlusIcon
+} from '@heroicons/vue/24/outline';
 
 const TRACKING = {
     STOPPED: 'StartTracking',
@@ -46,23 +61,33 @@ const TRACKING = {
     STOPPING: 'StoppingTracking'
 }
 
+const addOptions = [
+    { value: '--add', context: Lang.CreateTranslationContext('verbs', 'Add') },
+    { value: 'camera', context: Lang.CreateTranslationContext('scene', 'Camera') },
+    { value: 'tracker', context: Lang.CreateTranslationContext('scene', 'Tracker') }
+];
+
 export default {
     name: "Tracking",
     components: {
         GetText,
         CompBtnblock,
-        CompVueSelector
+        CompVueSelector,
+        InputChoice,
+        PlusIcon
     },
     data() {
         return {
             Lang,
             trackingState: TRACKING.STOPPED,
-            TRACKING
+            TRACKING,
+            addOptions
         }
     },
     mounted() {
-        trackingView.setup();
-        trackingView.start();
+        renderer.setup();
+        renderer.attachScene(scene);
+        renderer.start();
     },
     methods: {
         toggleTracking() {
@@ -73,6 +98,21 @@ export default {
                 this.trackingState = TRACKING.STARTING;
                 setTimeout(() => { this.trackingState = TRACKING.STARTED; }, 1000);
             }
+        },
+        onAdd(ev) {
+            const value = ev.target.value;
+            if (value.startsWith('--')) return;
+
+            switch (value) {
+                case 'camera':
+                    console.log("trackingView.addCamera();");
+                    break;
+                case 'tracker':
+                    scene.addTracker();
+                    break;
+            }
+
+            ev.target.value = '--add';
         }
     }
 }
