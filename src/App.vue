@@ -14,6 +14,7 @@
 <script>
 import CompSidebar from './components/CompSidebar.vue';
 import { getSetting } from './scripts/settings';
+
 export default {
     name: "App",
     components: {CompSidebar},
