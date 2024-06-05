@@ -17,7 +17,7 @@
                             class="whitespace-nowrap text-ellipsis overflow-hidden transition-all"
                             :class="viewMode === '3Dview'? 'text-slate-50 font-bold': 'text-slate-600 dark:text-slate-200 font-base'"
                         >
-                            <get-text :context="Lang.CreateTranslationContext('tracking', '3DView')" />
+                            <get-text :context="Lang.CreateTranslationContext('scene', '3DView')" />
                         </p>
                     </button>
                     <button
@@ -28,7 +28,7 @@
                             class="whitespace-nowrap text-ellipsis overflow-hidden transition-all"
                             :class="viewMode === 'Camera'? 'text-slate-50 font-bold': 'text-slate-600 dark:text-slate-200 font-base'"
                         >
-                            <get-text :context="Lang.CreateTranslationContext('tracking', 'Cameras')" />
+                            <get-text :context="Lang.CreateTranslationContext('scene', 'Cameras')" />
                         </p>
                     </button>
                 </div>
@@ -38,7 +38,7 @@
                 >
                     <div class="flex w-full border-t-2 border-slate-200 dark:border-slate-600 z-50 px-2">
                         <input-choice
-                            :label="Lang.CreateTranslationContext('tracking', 'Camera')"
+                            :label="Lang.CreateTranslationContext('scene', 'Camera')"
                             :list="[{name: 'Camera 1', value: 'cam1'}, {name: 'Camera 2', value: 'cam2'}]"
                             :value="'cam1'"
                         />
@@ -58,7 +58,7 @@
                 >
                     <get-text
                         class="p-2"
-                        :context="Lang.CreateTranslationContext('tracking', trackingState)"
+                        :context="Lang.CreateTranslationContext('scene', trackingState)"
                     />
                 </comp-btnblock>
             </div>

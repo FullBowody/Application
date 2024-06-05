@@ -1,8 +1,7 @@
 {
     "Home": "Home",
-    "Cameras": "Cameras",
-    "Tracking": "Tracking",
-    "Extensions": "Extensions",
+    "Scene": "Scene",
+    "Listeners": "Listeners",
     "Account": "Account",
     "Settings": "Settings",
     "About": "About"

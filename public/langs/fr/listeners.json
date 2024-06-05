@@ -1,0 +1,13 @@
+{
+    "ListenersServer": "Serveur d'écoute",
+    "ServerPort": "Port du serveur : ",
+    "ServerAddress": "Adresse du serveur : ",
+    "ServerStatus": "Statut du serveur : ",
+    "Online": "En ligne",
+    "Offline": "Hors ligne",
+    "Starting": "Démarrage",
+    "Stopping": "Arrêt",
+    "ListenersConnected": "Écouteurs connectés",
+    "NoListeners": "Aucun écouteur connecté",
+    "NoListenersDesc": "Vous verrez ici les écouteurs connectés à votre serveur"
+}

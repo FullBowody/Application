@@ -30,14 +30,17 @@ npm install
 ## Build the wrapper
 This application uses a [Node wrapper](https://github.com/FullBowody/node-wrapper) to communicate with the FullBowody engine.
 To get a working communication between the application and the engine, you need to build the wrapper.
-To build the wrapper, first go in the Node wrapper directory at `dependencies/wrapper` and run
+To build the wrapper, first go in the Node wrapper directory at `dependencies/wrapper` and install the dependencies by running
 ```bash
 npm install
 ```
-Then, build the wrapper by running
+Then, build the wrapper by typing
 ```bash
 npm run build
 ```
+> [!NOTE]
+> If the wrapper as already been built, you might need to run `npm run rebuild` instead of `npm run build`, in case some source code has been modified. 
+
 The node wrapper should now be built and ready to be used by the application.
 If you ancouter any issues, please refer to the [Node wrapper](https://github.com/FullBowody/node-wrapper) repository.
 

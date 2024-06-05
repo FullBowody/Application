@@ -36,7 +36,7 @@ export default {
 
         // load engine from settings folder
         const engineFolder = getSetting('advanced.engineFolder');
-        if (engineFolder) ipc.send("change-engine-folder", engineFolder);
+        if (engineFolder) ipc.invoke("change-engine-path", engineFolder);
     },
     mounted() {
         this.$router.push({name: 'Home'});

@@ -18,11 +18,11 @@
     "TypeCombined": "Combiné",
     "RotateCamera": "Rotation de la caméra",
     "CameraSpeed": "Vitesse de la caméra",
-    "Extensions": "Extensions",
+    "Listeners": "Écouteurs",
     "ServerPort": "Port du serveur",
     "ServerAddress": "Adresse du serveur",
     "Advanced": "Avancé",
-    "EngineFolder": "Dossier du moteur FullBowody",
+    "EnginePath": "Chemin vers le moteur FullBowody",
     "SaveTitle": "Vous avez changé des paramètres",
     "UnknownErrorSaving": "Oups, une erreur inconnue est survenue :(",
     "ErrorSaving": "Oups, une erreur est survenue :\n"

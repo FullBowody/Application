@@ -18,11 +18,11 @@
     "TypeCombined": "Combined",
     "RotateCamera": "Rotate camera",
     "CameraSpeed": "Camera speed",
-    "Extensions": "Extensions",
+    "Listeners": "Listeners",
     "ServerPort": "Server port",
     "ServerAddress": "Server address",
     "Advanced": "Advanced",
-    "EngineFolder": "FullBowody engine folder",
+    "EnginePath": "Path towards FullBowody engine",
     "SaveTitle": "You changed some settings",
     "UnknownErrorSaving": "Oops, an unknown error occured :(",
     "ErrorSaving": "Oops, an error occured :\n"

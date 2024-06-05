@@ -102,9 +102,9 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.handle('change-engine-folder', async (event, ...args) => {
+ipcMain.handle('change-engine-path', async (event, ...args) => {
     return new Promise<boolean>((resolve, reject) => {
-        resolve(EngineHandle.SetEngineFolder(args[0]));
+        resolve(EngineHandle.SetEnginePath(args[0]));
     });
 });
 

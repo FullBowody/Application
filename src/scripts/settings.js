@@ -80,37 +80,25 @@ export const settings = [
                     }
                 ],
                 condition: (setting) => setting.inputValue === undefined ? setting.value() : setting.inputValue
-            },
-            {
-                name: 'TrackingType',
-                type: 'select',
-                options: () => [
-                    { context: Lang.CreateTranslationContext('settings', 'TypeAIGuess'), value: 'ai' },
-                    { context: Lang.CreateTranslationContext('settings', 'TypeIntersections'), value: 'intersection' },
-                    { context: Lang.CreateTranslationContext('settings', 'TypeCombined'), value: 'combined' }
-                ],
-                value: () => getSetting('tracking.type') ?? 'combined',
-                onchange: (value) => {},
-                save: (value) => { saveSetting('tracking.type', value) }
             }
         ]
     },
     {
-        name: 'Extensions',
+        name: 'Listeners',
         settings: [
             {
                 name: 'ServerPort',
                 type: 'number',
-                value: () => getSetting('extensions.serverPort') ?? 5621,
+                value: () => getSetting('listeners.serverPort') ?? 5621,
                 onchange: (value) => {},
-                save: (value) => { saveSetting('extensions.serverPort', value) }
+                save: (value) => { saveSetting('listeners.serverPort', value) }
             },
             {
                 name: 'ServerAddress',
                 type: 'string',
-                value: () => getSetting('extensions.serverAddress') ?? 'localhost',
+                value: () => getSetting('listeners.serverAddress') ?? 'localhost',
                 onchange: (value) => {},
-                save: (value) => { saveSetting('extensions.serverAddress', value) }
+                save: (value) => { saveSetting('listeners.serverAddress', value) }
             }
         ]
     },
@@ -118,13 +106,13 @@ export const settings = [
         name: 'Advanced',
         settings: [
             {
-                name: 'EngineFolder',
+                name: 'EnginePath',
                 type: 'string',
-                value: () => getSetting('advanced.engineFolder') ?? "",
+                value: () => getSetting('advanced.enginePath') ?? "",
                 onchange: (value) => {},
                 save: async (value) => {
-                    saveSetting('advanced.engineFolder', value);
-                    const success = await ipc.invoke("change-engine-folder", value);
+                    saveSetting('advanced.enginePath', value);
+                    const success = await ipc.invoke("change-engine-path", value);
                     // TODO : handle error with notification
                     // (create a notification system [state:loading/success/error/warning, title+icon+desc, notificationId for content updates, etc...])
                 }

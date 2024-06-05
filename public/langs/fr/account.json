@@ -2,8 +2,8 @@
     "NotLoggedIn": "Vous n'êtes pas connecté",
     "NotLoggedInDesc": "Veuillez vous connecter pour accéder à toutes les fonctionnalités de l'application",
     "Account": "Compte",
-    "Addons": "Modules",
-    "NoAddons": "Pas de module installé",
-    "NoAddonsDesc": "Vous pouvez installer des modules",
+    "Plugins": "Plugins",
+    "NoPlugins": "Pas de plugin installé",
+    "NoPluginsDesc": "Vous pouvez installer des plugins en cliquant",
     "Here": "ici"
 }

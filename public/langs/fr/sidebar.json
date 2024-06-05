@@ -1,8 +1,7 @@
 {
     "Home": "Accueil",
-    "Cameras": "Caméras",
-    "Tracking": "Suivi",
-    "Extensions": "Extensions",
+    "Scene": "Scène",
+    "Listeners": "Écouteurs",
     "Account": "Compte",
     "Settings": "Paramètres",
     "About": "À propos"

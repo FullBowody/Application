@@ -49,16 +49,12 @@ const tabs = [
         path: "/"
     },
     {
-        name: "Cameras",
-        path: "/cameras"
+        name: "Scene",
+        path: "/scene"
     },
     {
-        name: "Tracking",
-        path: "/tracking"
-    },
-    {
-        name: "Extensions",
-        path: "/extensions"
+        name: "Listeners",
+        path: "/listeners"
     },
     {
         name: "Account",
