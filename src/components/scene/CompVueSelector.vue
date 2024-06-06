@@ -52,7 +52,7 @@ import GetText from '@/components/text/GetText.vue';
 import Lang from '@/scripts/Lang';
 
 export default {
-    name: "CompSetting",
+    name: "CompVueSelector",
     components: {
         CompCard,
         InputChoice,

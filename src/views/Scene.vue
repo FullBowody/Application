@@ -2,7 +2,7 @@
     <div class="flex relative grow flex-col min-w-0 max-w-full">
         <!-- [START] 3D VIEW -->
         <div class="flex absolute w-full h-full z-50">
-            <div class="flex grow h-full w-full">
+            <div class="flex grow h-full w-full cursor-grab">
                 <canvas id="3Dview" class="flex grow" />
             </div>
         </div>
@@ -37,6 +37,16 @@
                 />
             </div>
         </div>
+
+        <div class="flex absolute w-full h-full items-center z-50 pointer-events-none"> <!-- tracker infos panel -->
+            <div class="ml-auto m-4 pointer-events-auto">
+                <comp-trackerinfos
+                    v-if="selectedObject && selectedObject.type === 'tracker'"
+                    :tracker="selectedObject"
+                    :scene="scene"
+                />
+            </div>
+        </div>
         <!-- [END] FLOATING UI -->
     </div>
 </template>
@@ -46,6 +56,7 @@ import GetText from '@/components/text/GetText.vue';
 import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
 import InputChoice from '@/components/inputs/InputChoice.vue';
 import CompVueSelector from '@/components/scene/CompVueSelector.vue';
+import CompTrackerinfos from '@/components/scene/CompTrackerinfos.vue';
 import Lang from '@/scripts/Lang';
 import * as renderer from '@/scripts/3Drenderer';
 import scene from '@/scripts/scene.ts';
@@ -73,6 +84,7 @@ export default {
         GetText,
         CompBtnblock,
         CompVueSelector,
+        CompTrackerinfos,
         InputChoice,
         PlusIcon
     },
@@ -81,13 +93,33 @@ export default {
             Lang,
             trackingState: TRACKING.STOPPED,
             TRACKING,
-            addOptions
+            addOptions,
+            selectedObject: null,
+            scene
         }
     },
     mounted() {
         renderer.setup();
         renderer.attachScene(scene);
         renderer.start();
+
+        const view = document.getElementById('3Dview');
+        view.addEventListener('objectSelected', (ev) => {
+            if (ev.detail === null) {
+                this.selectedObject = null;
+                return;
+            }
+
+            switch (ev.detail.type) {
+                case 'camera':
+                    // this.selectedObject = scene.getCamera();
+                    break;
+                case 'tracker':
+                    this.selectedObject = scene.getTracker(ev.detail.id);
+                    break;
+            }
+            this.selectedObject.type = ev.detail.type;
+        });
     },
     methods: {
         toggleTracking() {

@@ -14,7 +14,7 @@
                 :value="value"
                 :disabled="disabled"
                 class="flex h-fit border-2 rounded-md px-2 py-1 border-slate-200 dark:border-slate-500 font-semibold whitespace-nowrap max-w-full
-                       min-w-0 text-ellipsis transition-colors outline-none placeholder-slate-600/[0.5]"
+                       min-w-0 text-ellipsis transition-colors outline-none placeholder-slate-600/[0.5] cursor-pointer"
                 :class="classes + (disabled ? ' bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-400 ' : ' bg-white dark:bg-slate-600 text-slate-600 dark:text-slate-200 hover:border-slate-300 hover:dark:border-slate-400 focus:border-slate-300 focus:dark:border-slate-400 ')"
                 @change="onchange"
             >
