@@ -10,7 +10,7 @@ class Vec3 {
     }
 }
 
-class Tracker {
+class Marker {
     position: Vec3;
     rotation: Vec3;
     id: number;
@@ -23,11 +23,11 @@ class Tracker {
 }
 
 class Scene {
-    trackers: Tracker[];
+    markers: Marker[];
     eventListeners: Map<string, Function[]>;
 
     constructor() {
-        this.trackers = [];
+        this.markers = [];
         this.eventListeners = new Map();
     }
 
@@ -44,50 +44,50 @@ class Scene {
         this.eventListeners.get(event)?.push(callback);
     }
 
-    addTracker(tracker: Tracker) {
-        if (!tracker) tracker = new Tracker();
-        this.trackers.push(tracker);
-        this.callEvent("trackerAdd", tracker);
+    addMarker(marker: Marker) {
+        if (!marker) marker = new Marker();
+        this.markers.push(marker);
+        this.callEvent("markerAdd", marker);
     }
 
-    removeTracker(id: number) {
-        this.trackers = this.trackers.filter(tracker => tracker.id !== id);
-        this.callEvent("trackerRemove", id);
+    removeMarker(id: number) {
+        this.markers = this.markers.filter(marker => marker.id !== id);
+        this.callEvent("markerRemove", id);
     }
 
-    getTracker(id: number) {
-        return this.trackers.find(tracker => tracker.id === id);
+    getMarker(id: number) {
+        return this.markers.find(marker => marker.id === id);
     }
 
-    setTrackerId(id: number, newId: number) {
-        const tracker = this.trackers.find(tracker => tracker.id === id);
-        if (!tracker) return;
-        tracker.id = newId;
-        this.callEvent("trackerIDUpdate", {
+    setMarkerId(id: number, newId: number) {
+        const marker = this.markers.find(marker => marker.id === id);
+        if (!marker) return;
+        marker.id = newId;
+        this.callEvent("markerIDUpdate", {
             oldId: id,
             newId
         });
     }
 
-    setTrackerPos(id: number, position: Vec3) {
-        const tracker = this.trackers.find(tracker => tracker.id === id);
-        if (!tracker) return;
-        tracker.position = position;
-        this.callEvent("trackerPoseUpdate", {
-            id: tracker.id,
-            position: tracker.position,
-            rotation: tracker.rotation
+    setMarkerPos(id: number, position: Vec3) {
+        const marker = this.markers.find(marker => marker.id === id);
+        if (!marker) return;
+        marker.position = position;
+        this.callEvent("markerPoseUpdate", {
+            id: marker.id,
+            position: marker.position,
+            rotation: marker.rotation
         });
     }
 
-    setTrackerRot(id: number, rotation: Vec3) {
-        const tracker = this.trackers.find(tracker => tracker.id === id);
-        if (!tracker) return;
-        tracker.rotation = rotation;
-        this.callEvent("trackerPoseUpdate", {
-            id: tracker.id,
-            position: tracker.position,
-            rotation: tracker.rotation
+    setMarkerRot(id: number, rotation: Vec3) {
+        const marker = this.markers.find(marker => marker.id === id);
+        if (!marker) return;
+        marker.rotation = rotation;
+        this.callEvent("markerPoseUpdate", {
+            id: marker.id,
+            position: marker.position,
+            rotation: marker.rotation
         });
     }
 }

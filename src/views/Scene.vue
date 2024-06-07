@@ -38,11 +38,11 @@
             </div>
         </div>
 
-        <div class="flex absolute w-full h-full items-center z-50 pointer-events-none"> <!-- tracker infos panel -->
+        <div class="flex absolute w-full h-full items-center z-50 pointer-events-none"> <!-- marker infos panel -->
             <div class="ml-auto m-4 pointer-events-auto">
-                <comp-trackerinfos
-                    v-if="selectedObject && selectedObject.type === 'tracker'"
-                    :tracker="selectedObject"
+                <comp-markerinfos
+                    v-if="selectedObject && selectedObject.type === 'marker'"
+                    :marker="selectedObject"
                     :scene="scene"
                 />
             </div>
@@ -56,7 +56,7 @@ import GetText from '@/components/text/GetText.vue';
 import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
 import InputChoice from '@/components/inputs/InputChoice.vue';
 import CompVueSelector from '@/components/scene/CompVueSelector.vue';
-import CompTrackerinfos from '@/components/scene/CompTrackerinfos.vue';
+import CompMarkerinfos from '@/components/scene/CompMarkerinfos.vue';
 import Lang from '@/scripts/Lang';
 import * as renderer from '@/scripts/3Drenderer';
 import scene from '@/scripts/scene.ts';
@@ -75,7 +75,7 @@ const TRACKING = {
 const addOptions = [
     { value: '--add', context: Lang.CreateTranslationContext('verbs', 'Add') },
     { value: 'camera', context: Lang.CreateTranslationContext('scene', 'Camera') },
-    { value: 'tracker', context: Lang.CreateTranslationContext('scene', 'Tracker') }
+    { value: 'marker', context: Lang.CreateTranslationContext('scene', 'Marker') }
 ];
 
 export default {
@@ -84,7 +84,7 @@ export default {
         GetText,
         CompBtnblock,
         CompVueSelector,
-        CompTrackerinfos,
+        CompMarkerinfos,
         InputChoice,
         PlusIcon
     },
@@ -114,8 +114,8 @@ export default {
                 case 'camera':
                     // this.selectedObject = scene.getCamera();
                     break;
-                case 'tracker':
-                    this.selectedObject = scene.getTracker(ev.detail.id);
+                case 'marker':
+                    this.selectedObject = scene.getMarker(ev.detail.id);
                     break;
             }
             this.selectedObject.type = ev.detail.type;
@@ -139,8 +139,8 @@ export default {
                 case 'camera':
                     console.log("trackingView.addCamera();");
                     break;
-                case 'tracker':
-                    scene.addTracker();
+                case 'marker':
+                    scene.addMarker();
                     break;
             }
 

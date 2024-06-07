@@ -7,9 +7,6 @@ let camera, scene, renderer, raycaster, rayTargeted;
 let cameraSpeed = 0, cameraDistance = 4, camRotX = 0.78, camRotY = 0.78;
 let lastTime = 0;
 
-let trackers = [];
-// let cameras = [];
-
 export function createLine(p1, p2, color) {
     const points = [];
     points.push(new THREE.Vector3(p1.x, p1.y, p1.z));
@@ -154,17 +151,17 @@ export function stop() {
 }
 
 export function attachScene(scene) {
-    scene.addEventListener('trackerAdd', addSceneTracker);
-    scene.addEventListener('trackerRemove', removeSceneTracker);
-    scene.addEventListener('trackerIDUpdate', updateTrackerID);
-    scene.addEventListener('trackerPoseUpdate', updateTrackerPose);
+    scene.addEventListener('markerAdd', addSceneMarker);
+    scene.addEventListener('markerRemove', removeSceneMarker);
+    scene.addEventListener('markerIDUpdate', updateMarkerID);
+    scene.addEventListener('markerPoseUpdate', updateMarkerPose);
 }
 
-function updateTrackerID(infos) {
-    const tracker = rayTargeted.children.find(child => child.userData?.id === infos.oldId);
-    if (tracker) {
-        tracker.userData.id = infos.newId;
-        const frontPlane = tracker.children[0];
+function updateMarkerID(infos) {
+    const marker = rayTargeted.children.find(child => child.userData?.id === infos.oldId);
+    if (marker) {
+        marker.userData.id = infos.newId;
+        const frontPlane = marker.children[0];
         const arucoImage = getArucoImage(256, 0.1, ArucoDictName.DICT_4X4, infos.newId);
         arucoImage.then(image => {
             const arucoTexture = new THREE.CanvasTexture(image);
@@ -175,18 +172,18 @@ function updateTrackerID(infos) {
     }
 }
 
-function updateTrackerPose(infos) {
-    const tracker = rayTargeted.children.find(child => child.userData?.id === infos.id);
-    if (tracker) {
-        tracker.position.set(infos.position.x, infos.position.y, infos.position.z);
-        tracker.rotation.set(infos.rotation.x, infos.rotation.y, infos.rotation.z);
+function updateMarkerPose(infos) {
+    const marker = rayTargeted.children.find(child => child.userData?.id === infos.id);
+    if (marker) {
+        marker.position.set(infos.position.x, infos.position.y, infos.position.z);
+        marker.rotation.set(infos.rotation.x, infos.rotation.y, infos.rotation.z);
     }
 }
 
-function removeSceneTracker(id) {
-    const tracker = rayTargeted.children.find(child => child.userData?.id === id);
-    if (tracker) {
-        rayTargeted.remove(tracker);
+function removeSceneMarker(id) {
+    const marker = rayTargeted.children.find(child => child.userData?.id === id);
+    if (marker) {
+        rayTargeted.remove(marker);
     }
 
     canvas.dispatchEvent(new CustomEvent('objectSelected', {
@@ -194,8 +191,8 @@ function removeSceneTracker(id) {
     }));
 }
 
-async function addSceneTracker(tracker) {
-    const arucoImage = await getArucoImage(256, 0.1, ArucoDictName.DICT_4X4, tracker.id);
+async function addSceneMarker(marker) {
+    const arucoImage = await getArucoImage(256, 0.1, ArucoDictName.DICT_4X4, marker.id);
     const arucoTexture = new THREE.CanvasTexture(arucoImage);
     arucoTexture.magFilter = THREE.NearestFilter;
 
@@ -212,8 +209,8 @@ async function addSceneTracker(tracker) {
     plane.add(markerFront);
     plane.add(markerBack);
 
-    plane.position.set(tracker.position.x, tracker.position.y, tracker.position.z);
-    plane.userData = {type: 'tracker', ...tracker};
+    plane.position.set(marker.position.x, marker.position.y, marker.position.z);
+    plane.userData = {type: 'marker', ...marker};
     rayTargeted.add(plane);
 }
 

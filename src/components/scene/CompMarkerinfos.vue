@@ -5,35 +5,35 @@
     >
         <div class="flex space-x-2 mx-4 justify-center">
             <div class="flex items-center justify-center w-8 h-8 bg-slate-200 dark:bg-slate-500 rounded-full">
-                <p class="text-xl font-bold">T</p>
+                <p class="text-xl font-bold">M</p>
             </div>
             <div class="flex items-center justify-center">
                 <h1 class="text-lg font-semibold">
-                    <get-text :context="Lang.CreateTranslationContext('scene', 'Tracker')" />
+                    <get-text :context="Lang.CreateTranslationContext('scene', 'Marker')" />
                 </h1>
             </div>
         </div>
         <div class="flex flex-col">
             <input-text
-                :label="Lang.CreateTranslationContext('scene', 'TrackerId')"
-                :value="tracker.id"
-                @input="onTrackerIdChange"
+                :label="Lang.CreateTranslationContext('scene', 'MarkerId')"
+                :value="marker.id"
+                @input="onMarkerIdChange"
             />
             <input-text
-                :label="Lang.CreateTranslationContext('scene', 'TrackerPos')"
-                :value="tracker.position.x"
-                @input="onTrackerPosChange"
+                :label="Lang.CreateTranslationContext('scene', 'MarkerPos')"
+                :value="marker.position.x"
+                @input="onMarkerPosChange"
             />
             <input-text
-                :label="Lang.CreateTranslationContext('scene', 'TrackerRot')"
-                :value="tracker.rotation.x * 180 / Math.PI"
-                @input="onTrackerRotChange"
+                :label="Lang.CreateTranslationContext('scene', 'MarkerRot')"
+                :value="marker.rotation.x * 180 / Math.PI"
+                @input="onMarkerRotChange"
             />
         </div>
         <div class="flex justify-between">
             <div></div>
             <comp-btnblock
-                :onclick="onTrackerDelete"
+                :onclick="onMarkerDelete"
             >
                 <get-text :context="Lang.CreateTranslationContext('verbs', 'Delete')" />
             </comp-btnblock>
@@ -48,14 +48,14 @@ import Lang from '../../scripts/Lang';
 import CompBtnblock from '../inputs/CompBtnblock.vue';
 
 export default {
-    name: 'CompTrackerinfos',
+    name: 'CompMarkerinfos',
     components: {
         GetText,
         InputText,
         CompBtnblock
     },
     props: {
-        tracker: Object,
+        marker: Object,
         scene: Object
     },
     data() {
@@ -64,30 +64,30 @@ export default {
         }
     },
     mounted() {
-        console.log(this.tracker);
+        console.log(this.marker);
     },
     methods: {
-        onTrackerIdChange(ev) {
+        onMarkerIdChange(ev) {
             const nbId = parseInt(ev.target.value);
             if (isNaN(nbId)) return;
-            this.scene.setTrackerId(this.tracker.id, nbId)
+            this.scene.setMarkerId(this.marker.id, nbId)
         },
-        onTrackerPosChange(ev) {
-            this.scene.setTrackerPos(this.tracker.id, {
+        onMarkerPosChange(ev) {
+            this.scene.setMarkerPos(this.marker.id, {
                 x: this.toNumber(ev.target.value),
                 y: 0,
                 z: 0
             });
         },
-        onTrackerRotChange(ev) {
-            this.scene.setTrackerRot(this.tracker.id, {
+        onMarkerRotChange(ev) {
+            this.scene.setMarkerRot(this.marker.id, {
                 x: this.toNumber(ev.target.value) * Math.PI / 180,
                 y: 0,
                 z: 0
             });
         },
-        onTrackerDelete() {
-            this.scene.removeTracker(this.tracker.id);
+        onMarkerDelete() {
+            this.scene.removeMarker(this.marker.id);
         },
         toNumber(value) {
             const nb = parseFloat(value);
