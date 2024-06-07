@@ -19,15 +19,15 @@
                 :value="marker.id"
                 @input="onMarkerIdChange"
             />
-            <input-text
+            <input-vec3
                 :label="Lang.CreateTranslationContext('scene', 'MarkerPos')"
-                :value="marker.position.x"
-                @input="onMarkerPosChange"
+                :value="marker.position"
+                :on-change="onMarkerPosChange"
             />
-            <input-text
+            <input-vec3
                 :label="Lang.CreateTranslationContext('scene', 'MarkerRot')"
-                :value="marker.rotation.x * 180 / Math.PI"
-                @input="onMarkerRotChange"
+                :value="marker.rotation"
+                :on-change="onMarkerRotChange"
             />
         </div>
         <div class="flex justify-between">
@@ -44,6 +44,7 @@
 <script>
 import GetText from '../text/GetText.vue';
 import InputText from '../inputs/InputText.vue';
+import InputVec3 from '../inputs/InputVec3.vue';
 import Lang from '../../scripts/Lang';
 import CompBtnblock from '../inputs/CompBtnblock.vue';
 
@@ -52,6 +53,7 @@ export default {
     components: {
         GetText,
         InputText,
+        InputVec3,
         CompBtnblock
     },
     props: {
@@ -64,7 +66,7 @@ export default {
         }
     },
     mounted() {
-        console.log(this.marker);
+        
     },
     methods: {
         onMarkerIdChange(ev) {
@@ -72,19 +74,11 @@ export default {
             if (isNaN(nbId)) return;
             this.scene.setMarkerId(this.marker.id, nbId)
         },
-        onMarkerPosChange(ev) {
-            this.scene.setMarkerPos(this.marker.id, {
-                x: this.toNumber(ev.target.value),
-                y: 0,
-                z: 0
-            });
+        onMarkerPosChange(vec) {
+            this.scene.setMarkerPos(this.marker.id, vec);
         },
-        onMarkerRotChange(ev) {
-            this.scene.setMarkerRot(this.marker.id, {
-                x: this.toNumber(ev.target.value) * Math.PI / 180,
-                y: 0,
-                z: 0
-            });
+        onMarkerRotChange(vec) {
+            this.scene.setMarkerRot(this.marker.id, vec);
         },
         onMarkerDelete() {
             this.scene.removeMarker(this.marker.id);

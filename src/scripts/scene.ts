@@ -46,6 +46,7 @@ class Scene {
 
     addMarker(marker: Marker) {
         if (!marker) marker = new Marker();
+        // TODO : Set tracker id to unique value
         this.markers.push(marker);
         this.callEvent("markerAdd", marker);
     }

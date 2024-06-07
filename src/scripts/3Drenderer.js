@@ -174,9 +174,14 @@ function updateMarkerID(infos) {
 
 function updateMarkerPose(infos) {
     const marker = rayTargeted.children.find(child => child.userData?.id === infos.id);
+    const deg2Rad = Math.PI / 180;
     if (marker) {
         marker.position.set(infos.position.x, infos.position.y, infos.position.z);
-        marker.rotation.set(infos.rotation.x, infos.rotation.y, infos.rotation.z);
+        marker.rotation.set(
+            infos.rotation.x * deg2Rad, 
+            infos.rotation.y * deg2Rad, 
+            infos.rotation.z * deg2Rad
+        );
     }
 }
 
