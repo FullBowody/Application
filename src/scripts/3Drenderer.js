@@ -157,16 +157,21 @@ export function attachScene(scene) {
     scene.addEventListener('markerPoseUpdate', updateMarkerPose);
 }
 
-function updateMarkerID(infos) {
+async function arucoTexture(id) {
+    const arucoImage = await getArucoImage(256, 0.1, ArucoDictName.DICT_4X4, id);
+    const arucoTexture = new THREE.CanvasTexture(arucoImage);
+    arucoTexture.magFilter = THREE.NearestFilter;
+    return arucoTexture;
+}
+
+async function updateMarkerID(infos) {
     const marker = rayTargeted.children.find(child => child.userData?.id === infos.oldId);
     if (marker) {
         marker.userData.id = infos.newId;
         const frontPlane = marker.children[0];
-        const arucoImage = getArucoImage(256, 0.1, ArucoDictName.DICT_4X4, infos.newId);
-        arucoImage.then(image => {
-            const arucoTexture = new THREE.CanvasTexture(image);
-            arucoTexture.magFilter = THREE.NearestFilter;
-            frontPlane.material.map = arucoTexture;
+        const texturePromise = arucoTexture(infos.newId);
+        texturePromise.then(tex => {
+            frontPlane.material.map = tex;
             frontPlane.material.needsUpdate = true;
         });
     }
@@ -197,26 +202,30 @@ function removeSceneMarker(id) {
 }
 
 async function addSceneMarker(marker) {
-    const arucoImage = await getArucoImage(256, 0.1, ArucoDictName.DICT_4X4, marker.id);
-    const arucoTexture = new THREE.CanvasTexture(arucoImage);
-    arucoTexture.magFilter = THREE.NearestFilter;
-
-    const markerFront = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.5, 0.5),
-        new THREE.MeshBasicMaterial({map: arucoTexture})
-    );
-    const markerBack = new THREE.Mesh(
+    const frontPlane = new THREE.Mesh(
         new THREE.PlaneGeometry(0.5, 0.5),
         new THREE.MeshBasicMaterial({color: 0xffffff})
     );
-    markerBack.rotation.y = Math.PI;
-    const plane = new THREE.Group();
-    plane.add(markerFront);
-    plane.add(markerBack);
+    const backPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.5, 0.5),
+        new THREE.MeshBasicMaterial({color: 0xffffff})
+    );
+    backPlane.rotation.y = Math.PI;
+    const markerObj = new THREE.Group();
+    markerObj.add(frontPlane);
+    markerObj.add(backPlane);
+    
+    const texturePromise = arucoTexture(marker.id);
+    texturePromise.then(tex => {
+        frontPlane.material.map = tex;
+        frontPlane.material.needsUpdate = true;
+    });
 
-    plane.position.set(marker.position.x, marker.position.y, marker.position.z);
-    plane.userData = {type: 'marker', ...marker};
-    rayTargeted.add(plane);
+    markerObj.position.set(marker.position.x, marker.position.y, marker.position.z);
+    markerObj.userData = {type: 'marker', ...marker};
+    rayTargeted.add(markerObj);
+
+    canvas.dispatchEvent(new CustomEvent('objectSelected', { detail: markerObj.userData }));
 }
 
 function render(time) {
