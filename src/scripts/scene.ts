@@ -45,8 +45,10 @@ class Scene {
     }
 
     addMarker(marker: Marker) {
-        if (!marker) marker = new Marker();
-        // TODO : Set tracker id to unique value
+        let markerId = 0;
+        while (this.markers.find(marker => marker.id === markerId))
+            markerId++;
+        if (!marker) marker = new Marker(markerId);
         this.markers.push(marker);
         this.callEvent("markerAdd", marker);
     }
@@ -63,6 +65,15 @@ class Scene {
     setMarkerId(id: number, newId: number) {
         const marker = this.markers.find(marker => marker.id === id);
         if (!marker) return;
+
+        // skip already used ids
+        const diff = newId - id > 0 ? 1 : -1;
+        while (this.markers.find(marker => marker.id === newId)) {
+            newId += diff;
+            if (newId < 0) // if newId is negative, set it to max id + 1
+                newId = this.markers.reduce((max, mrk) => Math.max(max, mrk.id), 0) + 1;
+        }
+
         marker.id = newId;
         this.callEvent("markerIDUpdate", {
             oldId: id,
