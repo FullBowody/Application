@@ -16,6 +16,10 @@ class Scene {
         this.eventListeners.get(event)?.forEach(callback => callback(...args));
     }
 
+    clearListeners() {
+        this.eventListeners.clear();
+    }
+
     addEventListener(event: string, callback: Function) {
         if (!this.eventListeners.has(event)) {
             this.eventListeners.set(event, []);
@@ -25,10 +29,11 @@ class Scene {
     }
 
     fetch() {
+        scene.markers = [];
         const promise = cmd.Execute(cmd.Command.GET, ['Scene', 'Markers']);
         promise.then(markers => {
             markers.forEach((marker: any) => {
-                scene.addMarker(marker, true);
+                scene.addMarker(FBTypes.Marker.FromJson(marker), true);
             });
         });
     }
@@ -52,7 +57,10 @@ class Scene {
     }
 
     removeMarker(id: number) {
-        const promise = cmd.Execute(cmd.Command.REM, ['Scene', 'Marker'], id);
+        const markerIndex = this.markers.findIndex(marker => marker.id === id);
+        if (markerIndex < 0) return;
+
+        const promise = cmd.Execute(cmd.Command.REM, ['Scene', 'Marker'], markerIndex);
         promise.then(() => {
             this.markers = this.markers.filter(marker => marker.id !== id);
             this.callEvent("markerRemove", id);
@@ -92,10 +100,7 @@ class Scene {
         const marker = this.markers[markerIndex];
 
         marker.pose.position = FBTypes.Vec3.FromJson(position);
-        const promise = cmd.Execute(cmd.Command.SET, ['Scene', 'Marker'], markerIndex, undefined, {
-            position: marker.pose.position.toJson(),
-            rotation: marker.pose.rotation.toJson()
-        });
+        const promise = cmd.Execute(cmd.Command.SET, ['Scene', 'Marker'], markerIndex, undefined, marker.pose.toJson());
         promise.then(() => {
             this.callEvent("markerPoseUpdate", marker);
         });
@@ -107,10 +112,7 @@ class Scene {
         const marker = this.markers[markerIndex];
 
         marker.pose.rotation = FBTypes.Quaternion.FromJson(rotation); // TODO : should be FromEuler()
-        const promise = cmd.Execute(cmd.Command.SET, ['Scene', 'Marker'], markerIndex, undefined, {
-            position: marker.pose.position.toJson(),
-            rotation: marker.pose.rotation.toJson()
-        });
+        const promise = cmd.Execute(cmd.Command.SET, ['Scene', 'Marker'], markerIndex, undefined, marker.pose.toJson());
         promise.then(() => {
             this.callEvent("markerPoseUpdate", marker);
         });

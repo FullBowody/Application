@@ -151,6 +151,7 @@ export function stop() {
 }
 
 export function attachScene(scene) {
+    scene.clearListeners();
     scene.addEventListener('markerAdd', addSceneMarker);
     scene.addEventListener('markerRemove', removeSceneMarker);
     scene.addEventListener('markerIDUpdate', updateMarkerID);
@@ -182,7 +183,7 @@ function updateMarkerPose(infos) {
     const deg2Rad = Math.PI / 180;
     if (marker) {
         marker.position.set(infos.pose.position.x, infos.pose.position.y, infos.pose.position.z);
-        marker.rotation.setFromQuaternion(infos.pose.rotation);
+        // marker.rotation.setFromQuaternion(infos.pose.rotation);
     }
 }
 
