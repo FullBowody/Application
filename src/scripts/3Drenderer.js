@@ -180,10 +180,9 @@ async function updateMarkerID(infos) {
 
 function updateMarkerPose(infos) {
     const marker = rayTargeted.children.find(child => child.userData?.id === infos.id);
-    const deg2Rad = Math.PI / 180;
     if (marker) {
         marker.position.set(infos.pose.position.x, infos.pose.position.y, infos.pose.position.z);
-        // marker.rotation.setFromQuaternion(infos.pose.rotation);
+        marker.rotation.setFromQuaternion(new THREE.Quaternion(infos.pose.rotation.x, infos.pose.rotation.y, infos.pose.rotation.z, infos.pose.rotation.w));
     }
 }
 
@@ -219,11 +218,7 @@ async function addSceneMarker(marker, comesfromSave=false) {
     });
 
     markerObj.position.set(marker.pose.position.x, marker.pose.position.y, marker.pose.position.z);
-    markerObj.rotation.set(
-        marker.pose.rotation.x * Math.PI / 180,
-        marker.pose.rotation.y * Math.PI / 180,
-        marker.pose.rotation.z * Math.PI / 180
-    ); // TODO : this object is quaternion for now, should add ToEuler method :)
+    markerObj.rotation.setFromQuaternion(new THREE.Quaternion(marker.pose.rotation.x, marker.pose.rotation.y, marker.pose.rotation.z, marker.pose.rotation.w));
     markerObj.userData = {type: 'marker', ...marker};
     rayTargeted.add(markerObj);
 
