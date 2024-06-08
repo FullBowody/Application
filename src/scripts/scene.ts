@@ -1,29 +1,9 @@
-class Vec3 {
-    x: number;
-    y: number;
-    z: number;
 
-    constructor(x: number = 0, y: number = 0, z: number = 0) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-}
-
-class Marker {
-    position: Vec3;
-    rotation: Vec3;
-    id: number;
-
-    constructor(id: number = 0, position: Vec3 = new Vec3(), rotation: Vec3 = new Vec3()) {
-        this.id = id;
-        this.position = position;
-        this.rotation = rotation;
-    }
-}
+import * as cmd from "../../electron/common/CommandTree";
+import * as FBTypes from "../../electron/common/fbBridge";
 
 class Scene {
-    markers: Marker[];
+    markers: FBTypes.Marker[];
     eventListeners: Map<string, Function[]>;
 
     constructor() {
@@ -44,18 +24,39 @@ class Scene {
         this.eventListeners.get(event)?.push(callback);
     }
 
-    addMarker(marker: Marker) {
-        let markerId = 0;
-        while (this.markers.find(marker => marker.id === markerId))
-            markerId++;
-        if (!marker) marker = new Marker(markerId);
-        this.markers.push(marker);
-        this.callEvent("markerAdd", marker);
+    fetch() {
+        const promise = cmd.Execute(cmd.Command.GET, ['Scene', 'Markers']);
+        promise.then(markers => {
+            markers.forEach((marker: any) => {
+                scene.addMarker(marker, true);
+            });
+        });
+    }
+
+    addMarker(marker: FBTypes.Marker, comesfromSave=false) {
+        if (!marker) {
+            let markerId = 0;
+            while (this.markers.find(marker => marker.id === markerId))
+                markerId++;
+            marker = FBTypes.Marker.FromJson({id: markerId});
+        }
+
+        let promise = new Promise((resolve, reject) => resolve(true));
+        if (!comesfromSave)
+            promise = cmd.Execute(cmd.Command.ADD, ['Scene', 'Marker'], marker.id, marker.pose.toJson());
+
+        promise.then(() => {
+            this.markers.push(marker);
+            this.callEvent("markerAdd", marker, comesfromSave);
+        });
     }
 
     removeMarker(id: number) {
-        this.markers = this.markers.filter(marker => marker.id !== id);
-        this.callEvent("markerRemove", id);
+        const promise = cmd.Execute(cmd.Command.REM, ['Scene', 'Marker'], id);
+        promise.then(() => {
+            this.markers = this.markers.filter(marker => marker.id !== id);
+            this.callEvent("markerRemove", id);
+        });
     }
 
     getMarker(id: number) {
@@ -63,8 +64,9 @@ class Scene {
     }
 
     setMarkerId(id: number, newId: number) {
-        const marker = this.markers.find(marker => marker.id === id);
-        if (!marker) return;
+        const markerIndex = this.markers.findIndex(marker => marker.id === id);
+        if (markerIndex < 0) return;
+        const marker = this.markers[markerIndex];
 
         // skip already used ids
         const diff = newId - id > 0 ? 1 : -1;
@@ -75,31 +77,44 @@ class Scene {
         }
 
         marker.id = newId;
-        this.callEvent("markerIDUpdate", {
-            oldId: id,
-            newId
+        const promise = cmd.Execute(cmd.Command.SET, ['Scene', 'Marker'], markerIndex, newId, undefined);
+        promise.then(() => {
+            this.callEvent("markerIDUpdate", {
+                oldId: id,
+                newId
+            });
         });
     }
 
-    setMarkerPos(id: number, position: Vec3) {
-        const marker = this.markers.find(marker => marker.id === id);
-        if (!marker) return;
-        marker.position = position;
-        this.callEvent("markerPoseUpdate", {
-            id: marker.id,
-            position: marker.position,
-            rotation: marker.rotation
+    setMarkerPos(id: number, position: any) {
+        console.log("setMarkerPos");
+        const markerIndex = this.markers.findIndex(marker => marker.id === id);
+        if (markerIndex < 0) return;
+        const marker = this.markers[markerIndex];
+
+        marker.pose.position = FBTypes.Vec3.FromJson(position);
+        const promise = cmd.Execute(cmd.Command.SET, ['Scene', 'Marker'], markerIndex, undefined, {
+            position: marker.pose.position.toJson(),
+            rotation: marker.pose.rotation.toJson()
+        });
+        promise.then(() => {
+            this.callEvent("markerPoseUpdate", marker);
         });
     }
 
-    setMarkerRot(id: number, rotation: Vec3) {
-        const marker = this.markers.find(marker => marker.id === id);
-        if (!marker) return;
-        marker.rotation = rotation;
-        this.callEvent("markerPoseUpdate", {
-            id: marker.id,
-            position: marker.position,
-            rotation: marker.rotation
+    setMarkerRot(id: number, rotation: any) {
+        console.log("setMarkerRot");
+        const markerIndex = this.markers.findIndex(marker => marker.id === id);
+        if (markerIndex < 0) return;
+        const marker = this.markers[markerIndex];
+
+        marker.pose.rotation = FBTypes.Quaternion.FromJson(rotation); // TODO : should be FromEuler()
+        const promise = cmd.Execute(cmd.Command.SET, ['Scene', 'Marker'], markerIndex, undefined, {
+            position: marker.pose.position.toJson(),
+            rotation: marker.pose.rotation.toJson()
+        });
+        promise.then(() => {
+            this.callEvent("markerPoseUpdate", marker);
         });
     }
 }

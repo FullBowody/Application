@@ -1,9 +1,9 @@
 export class Vec3 {
     static FromJson(json) {
         return new Vec3(
-            json.x,
-            json.y,
-            json.z
+            json?.x ?? 0,
+            json?.y ?? 0,
+            json?.z ?? 0
         );
     }
     
@@ -41,10 +41,10 @@ export class Vec3 {
 export class Quaternion {
     static FromJson(json) {
         return new Quaternion(
-            json.x,
-            json.y,
-            json.z,
-            json.w
+            json?.x ?? 0,
+            json?.y ?? 0,
+            json?.z ?? 0,
+            json?.w ?? 1
         );
     }
 
@@ -86,8 +86,8 @@ export class Quaternion {
 export class Pose {
     static FromJson(json) {
         return new Pose(
-            Vec3.FromJson(json.position),
-            Quaternion.FromJson(json.rotation)
+            Vec3.FromJson(json?.position),
+            Quaternion.FromJson(json?.rotation)
         );
     }
 
@@ -121,8 +121,8 @@ export class Pose {
 export class Marker {
     static FromJson(json) {
         return new Marker(
-            json.id,
-            Pose.FromJson(json.pose)
+            json?.id ?? 0,
+            Pose.FromJson(json?.pose)
         );
     }
 
@@ -133,10 +133,10 @@ export class Marker {
         );
     }
 
-    public id: string;
+    public id: number;
     public pose: Pose;
 
-    constructor(id: string, pose: Pose) {
+    constructor(id: number, pose: Pose) {
         this.id = id;
         this.pose = pose;
     }

@@ -1,4 +1,4 @@
-export type TreePath = string[];
+export type CommandPath = string[];
 export enum Command {
     GET = "[GET]",
     SET = "[SET]",
@@ -6,12 +6,17 @@ export enum Command {
     REM = "[REM]",
 }
 
+declare var ipc: any; // defined in preload.ts (for front-end)
+export async function Execute(command: Command, path: CommandPath, ...args: any[]) {
+    return await ipc.invoke(`${command}/${path.join("/")}`, ...args);
+}
+
 export class CommandTree {
-    static String2Path(str: string): TreePath {
+    static String2Path(str: string): CommandPath {
         return str.split('/').filter(v => v);
     }
 
-    static ParseCall(call: string): { command: Command, path: TreePath }{
+    static ParseCall(call: string): { command: Command, path: CommandPath }{
         const command = call.substring(0, 5) as Command;
         const path = CommandTree.String2Path(call.substring(6));
         return { command, path };
@@ -23,7 +28,7 @@ export class CommandTree {
         this.tree = tree;
     }
 
-    search(path: TreePath) {
+    search(path: CommandPath) {
         let current = this.tree;
         for (const p of path) {
             if (current[p] === undefined) {
@@ -49,9 +54,9 @@ export class CommandTree {
             if (isCommand && typeof(root[key]) === 'function') {
                 const call = `${key}${path.substring(0, path.length - 1)}`;
                 ipcObj.handle(call, async (event, ...args) => {
-                    return root[key](...args);
+                    const res = root[key](...args);
+                    return res;
                 });
-                console.log("IPCSetup for ", call, " done.");
             } else {
                 this.setupIPC(ipcObj, root[key], `${path}${key}/`);
             }

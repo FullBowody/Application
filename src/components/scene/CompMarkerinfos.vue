@@ -21,12 +21,12 @@
             />
             <input-vec3
                 :label="Lang.CreateTranslationContext('scene', 'MarkerPos')"
-                :value="marker.position"
+                :value="marker.pose.position"
                 :on-change="onMarkerPosChange"
             />
             <input-vec3
                 :label="Lang.CreateTranslationContext('scene', 'MarkerRot')"
-                :value="marker.rotation"
+                :value="marker.pose.rotation"
                 :on-change="onMarkerRotChange"
             />
         </div>

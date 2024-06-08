@@ -103,6 +103,9 @@ export default {
         renderer.attachScene(scene);
         renderer.start();
 
+        // fetch from server
+        scene.fetch();
+
         const view = document.getElementById('3Dview');
         view.addEventListener('objectSelected', (ev) => {
             if (ev.detail === null) {

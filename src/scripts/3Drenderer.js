@@ -181,12 +181,8 @@ function updateMarkerPose(infos) {
     const marker = rayTargeted.children.find(child => child.userData?.id === infos.id);
     const deg2Rad = Math.PI / 180;
     if (marker) {
-        marker.position.set(infos.position.x, infos.position.y, infos.position.z);
-        marker.rotation.set(
-            infos.rotation.x * deg2Rad, 
-            infos.rotation.y * deg2Rad, 
-            infos.rotation.z * deg2Rad
-        );
+        marker.position.set(infos.pose.position.x, infos.pose.position.y, infos.pose.position.z);
+        marker.rotation.setFromQuaternion(infos.pose.rotation);
     }
 }
 
@@ -201,7 +197,7 @@ function removeSceneMarker(id) {
     }));
 }
 
-async function addSceneMarker(marker) {
+async function addSceneMarker(marker, comesfromSave=false) {
     const frontPlane = new THREE.Mesh(
         new THREE.PlaneGeometry(0.5, 0.5),
         new THREE.MeshBasicMaterial({color: 0xffffff})
@@ -221,11 +217,19 @@ async function addSceneMarker(marker) {
         frontPlane.material.needsUpdate = true;
     });
 
-    markerObj.position.set(marker.position.x, marker.position.y, marker.position.z);
+    markerObj.position.set(marker.pose.position.x, marker.pose.position.y, marker.pose.position.z);
+    markerObj.rotation.set(
+        marker.pose.rotation.x * Math.PI / 180,
+        marker.pose.rotation.y * Math.PI / 180,
+        marker.pose.rotation.z * Math.PI / 180
+    ); // TODO : this object is quaternion for now, should add ToEuler method :)
     markerObj.userData = {type: 'marker', ...marker};
     rayTargeted.add(markerObj);
 
-    canvas.dispatchEvent(new CustomEvent('objectSelected', { detail: markerObj.userData }));
+    if (!comesfromSave)
+        canvas.dispatchEvent(new CustomEvent('objectSelected', {
+            detail: markerObj.userData
+        }));
 }
 
 function render(time) {

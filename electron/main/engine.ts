@@ -1,6 +1,6 @@
 import { ipcMain } from "electron";
-import { Command, CommandTree } from "./CommandTree";
-import * as FBTypes from "./fbBridge";
+import { Command, CommandTree } from "../common/CommandTree";
+import * as FBTypes from "../common/fbBridge";
 
 const FG_YELLOW = "\x1b[33m";
 const FG_GREEN = "\x1b[32m";
@@ -18,15 +18,19 @@ export class EngineHandle {
     static _engine = null;
     static _interval = null;
     static _commandTree = null;
+    static _enginePath = null;
 
     static SetEnginePath(path) {
         if (fb !== null) {
             if (EngineHandle._engine !== null) {
                 fb.destroyEngine(EngineHandle._engine);
             }
+            EngineHandle._enginePath = path;
             EngineHandle._engine = fb.createEngine(path);
-            console.log(FG_GREEN + "Engine loaded successfully." + FG_RESET);
-            return EngineHandle._engine !== null;
+            const result = EngineHandle._engine !== null;
+            if (result) console.log(FG_GREEN + "Engine loaded successfully." + FG_RESET);
+            else console.warn(FG_YELLOW + "Failed to load engine." + FG_RESET);
+            return result;
         }
         return false;
     }
