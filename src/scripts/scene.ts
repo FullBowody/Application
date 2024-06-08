@@ -87,7 +87,6 @@ class Scene {
     }
 
     setMarkerPos(id: number, position: any) {
-        console.log("setMarkerPos");
         const markerIndex = this.markers.findIndex(marker => marker.id === id);
         if (markerIndex < 0) return;
         const marker = this.markers[markerIndex];
@@ -103,7 +102,6 @@ class Scene {
     }
 
     setMarkerRot(id: number, rotation: any) {
-        console.log("setMarkerRot");
         const markerIndex = this.markers.findIndex(marker => marker.id === id);
         if (markerIndex < 0) return;
         const marker = this.markers[markerIndex];
