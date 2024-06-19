@@ -84,7 +84,6 @@ export class EngineHandle {
 
                 Cameras: {
                     [Command.GET]: () =>   {
-                        console.log("Cameras : ", this.GetEngine().getCameras());
                         return this.GetEngine().getCameras().map(c => FBTypes.Camera.FromFB(c));
                     }
                 },
