@@ -9,11 +9,12 @@ let cameraSpeed = 0, cameraDistance = 4, camRotX = 0.78, camRotY = 0.78;
 let lastTime = 0;
 const modelLoader = new GLTFLoader();
 
+const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 const MATERIALS = [
-    0x1e293b, // MAIN COLOR
-    0x64748b, // BORDER COLOR
-    0x0f172a, // OTHER (camera hole or marker texture zone)
-    0x0ea5e9 // SELECTED COLOR
+    isDarkMode? 0x1e293b : 0xe2e8f0, // MAIN COLOR
+    isDarkMode? 0x64748b : 0x94a3b8, // BORDER COLOR
+    isDarkMode? 0x0f172a : 0x1e293b, // OTHER (camera hole or marker texture zone)
+    isDarkMode? 0x0ea5e9 : 0x0ea5e9 // SELECTED COLOR
 ];
 
 function assignModelMaterials(model) {
@@ -46,9 +47,9 @@ export function createLine(p1, p2, color) {
 
 export function createAxis(size) {
     const group = new THREE.Group();
-    group.add(createLine({x: 0, y: 0, z: 0.01}, {x: size, y: 0, z: 0.01}, 0xff0000));
-    group.add(createLine({x: 0, y: 0, z: 0.01}, {x: 0, y: size, z: 0.01}, 0x00ff00));
-    group.add(createLine({x: 0, y: 0, z: 0.01}, {x: 0, y: 0, z: size}, 0x0000ff));
+    group.add(createLine({x: 0, y: 0, z: 0.001}, {x: size, y: 0, z: 0.001}, 0xff0000));
+    group.add(createLine({x: 0, y: 0, z: 0.001}, {x: 0, y: size, z: 0.001}, 0x00ff00));
+    group.add(createLine({x: 0, y: 0, z: 0.001}, {x: 0, y: 0, z: size}, 0x0000ff));
     return group;
 }
 
@@ -90,8 +91,8 @@ export function setup() {
     const axis = createAxis(1);
     axis.position.set(0, 0.001, 0)
     scene.add(rayTargeted);
-    scene.add(axis);
     scene.add(createLineGround(1, 10, 0x888888));
+    scene.add(axis);
 
     cameraSpeed = getSetting('scene.rotateCamera')
         ? (getSetting('scene.cameraSpeed') ?? 10)
@@ -136,12 +137,6 @@ export function setup() {
             canvas.style.cursor = 'grab';
     });
 
-    modelLoader.load('/assets/models/camera.glb', gltf => {
-        const model = gltf.scene;
-        assignModelMaterials(model);
-        scene.add(model);
-    });
-
     let oldSelectedObjectDetails = null;
     canvas.addEventListener('objectSelected', ev => {
         function swapMatColor(mat1, mat2) {
@@ -169,7 +164,6 @@ function getCanvasMousePos(e) {
 
 function onMouseClick(pointerPos) {
     let object = getObjectAtScreenPosition(pointerPos.x, pointerPos.y);
-    console.log(object);
     let counter = 5;
     while (object && !object.userData?.type && counter > 0) {
         object = object.parent;
@@ -206,6 +200,9 @@ export function attachScene(scene) {
     scene.addEventListener('markerRemove', removeSceneMarker);
     scene.addEventListener('markerIDUpdate', updateMarkerID);
     scene.addEventListener('markerPoseUpdate', updateMarkerPose);
+    scene.addEventListener('cameraAdd', addSceneCamera);
+    scene.addEventListener('cameraRemove', removeSceneCamera);
+    scene.addEventListener('cameraPoseUpdate', updateCameraPose);
 }
 
 async function arucoTexture(id) {
@@ -216,20 +213,22 @@ async function arucoTexture(id) {
 }
 
 async function updateMarkerID(infos) {
-    const marker = rayTargeted.children.find(child => child.userData?.id === infos.oldId);
+    const marker = rayTargeted.children.find(child => child.userData && child.userData.type === "marker" && child.userData.object.id === infos.oldId);
     if (marker) {
         marker.userData.id = infos.newId;
-        const frontPlane = marker.children[0];
-        const texturePromise = arucoTexture(infos.newId);
-        texturePromise.then(tex => {
-            frontPlane.material.map = tex;
-            frontPlane.material.needsUpdate = true;
+        marker.traverse(child => {
+            if (child.isMesh && child.material?.map) {
+                arucoTexture(infos.newId).then(tex => {
+                    child.material.map = tex;
+                    child.material.needsUpdate = true;
+                });
+            }
         });
     }
 }
 
 function updateMarkerPose(infos) {
-    const marker = rayTargeted.children.find(child => child.userData?.id === infos.id);
+    const marker = rayTargeted.children.find(child => child.userData && child.userData.type === "marker" && child.userData.object.id === infos.id);
     if (marker) {
         marker.position.set(infos.pose.position.x, infos.pose.position.y, infos.pose.position.z);
         marker.rotation.setFromQuaternion(new THREE.Quaternion(infos.pose.rotation.x, infos.pose.rotation.y, infos.pose.rotation.z, infos.pose.rotation.w));
@@ -237,7 +236,7 @@ function updateMarkerPose(infos) {
 }
 
 function removeSceneMarker(id) {
-    const marker = rayTargeted.children.find(child => child.userData?.id === id);
+    const marker = rayTargeted.children.find(child => child.userData && child.userData.type === "marker" && child.userData.object.id === id);
     if (marker) {
         rayTargeted.remove(marker);
     }
@@ -248,15 +247,6 @@ function removeSceneMarker(id) {
 }
 
 async function addSceneMarker(marker, comesfromSave=false) {
-    const frontPlane = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.5, 0.5),
-        new THREE.MeshBasicMaterial({color: 0xffffff})
-    );
-    const backPlane = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.5, 0.5),
-        new THREE.MeshBasicMaterial({color: 0xffffff})
-    );
-    backPlane.rotation.y = Math.PI;
     const markerObj = await loadModel('/assets/models/marker.glb');
     assignModelMaterials(markerObj);
     const markerMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
@@ -275,12 +265,45 @@ async function addSceneMarker(marker, comesfromSave=false) {
 
     markerObj.position.set(marker.pose.position.x, marker.pose.position.y, marker.pose.position.z);
     markerObj.rotation.setFromQuaternion(new THREE.Quaternion(marker.pose.rotation.x, marker.pose.rotation.y, marker.pose.rotation.z, marker.pose.rotation.w));
-    markerObj.userData = {type: 'marker', ...marker, ...markerObj.userData};
+    markerObj.userData = {type: 'marker', object: marker, ...markerObj.userData};
     rayTargeted.add(markerObj);
 
     if (!comesfromSave)
         canvas.dispatchEvent(new CustomEvent('objectSelected', {
             detail: markerObj.userData
+        }));
+}
+
+function updateCameraPose(infos) {
+    const camera = rayTargeted.children.find(child => child.userData && child.userData.type === "camera" && child.userData.object.id === infos.id);
+    if (camera) {
+        camera.position.set(infos.pose.position.x, infos.pose.position.y, infos.pose.position.z);
+        camera.rotation.setFromQuaternion(new THREE.Quaternion(infos.pose.rotation.x, infos.pose.rotation.y, infos.pose.rotation.z, infos.pose.rotation.w));
+    }
+}
+
+function removeSceneCamera(id) {
+    const camera = rayTargeted.children.find(child => child.userData && child.userData.type === "camera" && child.userData.object.id === id);
+    if (camera) {
+        rayTargeted.remove(camera);
+    }
+
+    canvas.dispatchEvent(new CustomEvent('objectSelected', {
+        detail: null
+    }));
+}
+
+async function addSceneCamera(camera, comesfromSave=false) {
+    const cameraObj = await loadModel('/assets/models/camera.glb');
+    assignModelMaterials(cameraObj);
+    cameraObj.position.set(camera.pose.position.x, camera.pose.position.y, camera.pose.position.z);
+    cameraObj.rotation.setFromQuaternion(new THREE.Quaternion(camera.pose.rotation.x, camera.pose.rotation.y, camera.pose.rotation.z, camera.pose.rotation.w));
+    cameraObj.userData = {type: 'camera', object: camera, ...cameraObj.userData};
+    rayTargeted.add(cameraObj);
+
+    if (!comesfromSave)
+        canvas.dispatchEvent(new CustomEvent('objectSelected', {
+            detail: cameraObj.userData
         }));
 }
 

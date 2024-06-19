@@ -2,6 +2,8 @@
     "3DView": "Vue 3D",
     "Cameras": "Cameras",
     "Camera": "Camera",
+    "CameraPos": "Position",
+    "CameraRot": "Rotation",
     "Markers": "Marqueurs",
     "Marker": "Marqueur",
     "MarkerId": "ID",

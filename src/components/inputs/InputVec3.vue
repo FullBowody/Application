@@ -15,7 +15,7 @@
                 type="number"
                 name="x"
                 class="flex h-8 border-2 rounded-md px-2 py-1 border-slate-200 dark:border-slate-500 font-semibold text-sm whitespace-nowrap max-w-[4em]
-                    hover:border-slate-300 hover:dark:border-slate-400 focus:border-slate-300 focus:dark:border-slate-400 min-w-0 w-full text-ellipsis transition-colors outline-none placeholder-slate-400"
+                       min-w-0 w-full text-ellipsis transition-colors outline-none placeholder-slate-400"
                 :class="additionnalClasses"
                 :value="x"
                 :disabled="disabled"
@@ -26,7 +26,7 @@
                 type="number"
                 name="y"
                 class="flex h-8 border-2 rounded-md px-2 py-1 border-slate-200 dark:border-slate-500 font-semibold text-sm whitespace-nowrap max-w-[4em]
-                    hover:border-slate-300 hover:dark:border-slate-400 focus:border-slate-300 focus:dark:border-slate-400 min-w-0 w-full text-ellipsis transition-colors outline-none placeholder-slate-400"
+                       min-w-0 w-full text-ellipsis transition-colors outline-none placeholder-slate-400"
                 :class="additionnalClasses"
                 :value="y"
                 :disabled="disabled"
@@ -37,7 +37,7 @@
                 type="number"
                 name="z"
                 class="flex h-8 border-2 rounded-md px-2 py-1 border-slate-200 dark:border-slate-500 font-semibold text-sm whitespace-nowrap max-w-[4em]
-                    hover:border-slate-300 hover:dark:border-slate-400 focus:border-slate-300 focus:dark:border-slate-400 min-w-0 w-full text-ellipsis transition-colors outline-none placeholder-slate-400"
+                       min-w-0 w-full text-ellipsis transition-colors outline-none placeholder-slate-400"
                 :class="additionnalClasses"
                 :value="z"
                 :disabled="disabled"
@@ -88,7 +88,7 @@ export default {
             y: this.value.y,
             z: this.value.z,
             additionnalClasses:
-                (this.disabled ? ' bg-slate-100 dark:bg-slate-700 text-slate-300 dark:text-slate-400 ' : ' bg-white dark:bg-slate-600 text-slate-600 dark:text-slate-200 hover:border-slate-300 hover:dark:border-slate-500 ') +
+                (this.disabled ? ' bg-slate-100 dark:bg-slate-700 text-slate-300 dark:text-slate-400 ' : ' bg-white dark:bg-slate-600 text-slate-600 dark:text-slate-200 hover:border-slate-300 hover:dark:border-slate-400 focus:border-slate-300 focus:dark:border-slate-400 ') +
                 (this.showCopy ? ' rounded-r-none' : ''),
         }
     },

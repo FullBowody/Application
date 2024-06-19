@@ -8,6 +8,7 @@ export class Vec3 {
     }
     
     static FromFB(fbVec3) {
+        if (!fbVec3) return null;
         return new Vec3(
             fbVec3.getX(),
             fbVec3.getY(),
@@ -19,7 +20,7 @@ export class Vec3 {
     public y: number;
     public z: number;
 
-    constructor(x: number, y: number, z: number) {
+    constructor(x: number = 0, y: number = 0, z: number = 0) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -49,6 +50,7 @@ export class Quaternion {
     }
 
     static FromFB(fbQuaternion) {
+        if (!fbQuaternion) return null;
         return new Quaternion(
             fbQuaternion.getX(),
             fbQuaternion.getY(),
@@ -62,7 +64,7 @@ export class Quaternion {
     public z: number;
     public w: number;
 
-    constructor(x: number, y: number, z: number, w: number) {
+    constructor(x: number = 0, y: number = 0, z: number = 0, w: number = 1) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -92,6 +94,7 @@ export class Pose {
     }
 
     static FromFB(fbPose) {
+        if (!fbPose) return null;
         return new Pose(
             Vec3.FromFB(fbPose.getPosition()),
             Quaternion.FromFB(fbPose.getRotation())
@@ -101,7 +104,7 @@ export class Pose {
     public position: Vec3;
     public rotation: Quaternion;
 
-    constructor(position: Vec3, rotation: Quaternion) {
+    constructor(position: Vec3 = new Vec3(), rotation: Quaternion = new Quaternion()) {
         this.position = position;
         this.rotation = rotation;
     }
@@ -127,6 +130,7 @@ export class Marker {
     }
 
     static FromFB(fbMarker) {
+        if (!fbMarker) return null;
         return new Marker(
             fbMarker.getId(),
             Pose.FromFB(fbMarker.getPose())
@@ -151,4 +155,45 @@ export class Marker {
     toFB(addon) {
         return new addon.Marker(this.id, this.pose.toFB(addon));
     }
+}
+
+export class Camera {
+    static FromJson(json) {
+        return new Camera(
+            json?.id ?? 0,
+            json?.type ?? "",
+            Pose.FromJson(json?.pose)
+        );
+    }
+
+    static FromFB(fbCamera) {
+        if (!fbCamera) return null;
+        return new Camera(
+            fbCamera.getId(),
+            "PluginName", // fbCamera.getType(),
+            Pose.FromFB(fbCamera.getPose())
+        );
+    }
+
+    public id: number;
+    public type: string;
+    public pose: Pose;
+
+    constructor(id: number, type: string, pose: Pose = new Pose()) {
+        this.id = id;
+        this.type = type;
+        this.pose = pose;
+    }
+
+    toJson() {
+        return {
+            id: this.id,
+            type: this.type,
+            pose: this.pose.toJson()
+        };
+    }
+
+    // toFB(addon) {
+    //     return new addon.Camera(this.id, this.pose.toFB(addon));
+    // }
 }

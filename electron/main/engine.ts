@@ -80,9 +80,31 @@ export class EngineHandle {
                     [Command.REM]: (index) => {
                         return this.GetEngine().getScene().destroyMarker(index);
                     }
+                },
+
+                Cameras: {
+                    [Command.GET]: () =>   {
+                        console.log("Cameras : ", this.GetEngine().getCameras());
+                        return this.GetEngine().getCameras().map(c => FBTypes.Camera.FromFB(c));
+                    }
+                },
+                Camera: {
+                    [Command.GET]: (id) => {
+                        const camera = this.GetEngine().getCamera(id);
+                        if (!camera) return null;
+                        return FBTypes.Camera.FromFB(camera).toJson();
+                    },
+                    [Command.ADD]: (pluginName) =>   {
+                        if (pluginName === undefined) return null;
+                        const camera = this.GetEngine().createCamera(pluginName);
+                        return FBTypes.Camera.FromFB(camera);
+                    },
+                    [Command.REM]: (id) => {
+                        return this.GetEngine().destroyCamera(id);
+                    }
                 }
             }
-            // TODO : Rest of API (Camera, Plugins, ...)
+            // TODO : Rest of API (Plugins, ...)
         });
         this._commandTree.setupIPC(ipcMain);
     }

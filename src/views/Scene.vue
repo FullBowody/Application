@@ -42,7 +42,17 @@
             <div class="ml-auto m-4 pointer-events-auto">
                 <comp-markerinfos
                     v-if="selectedObject && selectedObject.type === 'marker'"
-                    :marker="selectedObject"
+                    :marker="selectedObject.object"
+                    :scene="scene"
+                />
+            </div>
+        </div>
+
+        <div class="flex absolute w-full h-full items-center z-50 pointer-events-none"> <!-- marker infos panel -->
+            <div class="ml-auto m-4 pointer-events-auto">
+                <comp-camerainfos
+                    v-if="selectedObject && selectedObject.type === 'camera'"
+                    :camera="selectedObject.object"
                     :scene="scene"
                 />
             </div>
@@ -57,6 +67,7 @@ import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
 import InputChoice from '@/components/inputs/InputChoice.vue';
 import CompVueSelector from '@/components/scene/CompVueSelector.vue';
 import CompMarkerinfos from '@/components/scene/CompMarkerinfos.vue';
+import CompCamerainfos from '@/components/scene/CompCamerainfos.vue';
 import Lang from '@/scripts/Lang';
 import * as renderer from '@/scripts/3Drenderer';
 import scene from '@/scripts/scene.ts';
@@ -85,6 +96,7 @@ export default {
         CompBtnblock,
         CompVueSelector,
         CompMarkerinfos,
+        CompCamerainfos,
         InputChoice,
         PlusIcon
     },
@@ -113,16 +125,17 @@ export default {
                 return;
             }
 
+            this.selectedObject = {
+                type: ev.detail.type,
+                object: null
+            };
+
             switch (ev.detail.type) {
-                case 'camera':
-                    // this.selectedObject = scene.getCamera();
-                    break;
-                case 'marker':
-                    this.selectedObject = scene.getMarker(ev.detail.id);
-                    break;
+                case 'marker': this.selectedObject.object = scene.getMarker(ev.detail.object.id); break;
+                case 'camera': this.selectedObject.object = scene.getCamera(ev.detail.object.id); break;
             }
-            if (this.selectedObject)
-                this.selectedObject.type = ev.detail.type;
+
+            console.log(ev.detail, this.selectedObject);
         });
     },
     methods: {
@@ -140,12 +153,8 @@ export default {
             if (value.startsWith('--')) return;
 
             switch (value) {
-                case 'camera':
-                    console.log("trackingView.addCamera();");
-                    break;
-                case 'marker':
-                    scene.addMarker();
-                    break;
+                case 'camera': scene.addCamera(); break;
+                case 'marker': scene.addMarker(); break;
             }
 
             ev.target.value = '--add';

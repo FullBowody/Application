@@ -8,7 +8,10 @@ export enum Command {
 
 declare var ipc: any; // defined in preload.ts (for front-end)
 export async function Execute(command: Command, path: CommandPath, ...args: any[]) {
-    return await ipc.invoke(`${command}/${path.join("/")}`, ...args);
+    // console.log(`${command}/${path.join("/")}`, ...args);
+    const res = await ipc.invoke(`${command}/${path.join("/")}`, ...args);
+    // console.log(res);
+    return res;
 }
 
 export class CommandTree {
@@ -54,7 +57,9 @@ export class CommandTree {
             if (isCommand && typeof(root[key]) === 'function') {
                 const call = `${key}${path.substring(0, path.length - 1)}`;
                 ipcObj.handle(call, async (event, ...args) => {
+                    // console.log(call, ...args);
                     const res = root[key](...args);
+                    // console.log(call, res);
                     return res;
                 });
             } else {

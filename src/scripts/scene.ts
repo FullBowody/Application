@@ -4,10 +4,12 @@ import * as FBTypes from "../../electron/common/fbBridge";
 
 class Scene {
     markers: FBTypes.Marker[];
+    cameras: FBTypes.Camera[];
     eventListeners: Map<string, Function[]>;
 
     constructor() {
         this.markers = [];
+        this.cameras = [];
         this.eventListeners = new Map();
     }
 
@@ -30,10 +32,16 @@ class Scene {
 
     fetch() {
         scene.markers = [];
-        const promise = cmd.Execute(cmd.Command.GET, ['Scene', 'Markers']);
-        promise.then(markers => {
+        const markerPromise = cmd.Execute(cmd.Command.GET, ['Scene', 'Markers']);
+        markerPromise.then(markers => {
             markers.forEach((marker: any) => {
                 scene.addMarker(FBTypes.Marker.FromJson(marker), true);
+            });
+        });
+        const cameraPromise = cmd.Execute(cmd.Command.GET, ['Scene', 'Cameras']);
+        cameraPromise.then(cameras => {
+            cameras.forEach((camera: any) => {
+                scene.addCamera(FBTypes.Camera.FromJson(camera), true);
             });
         });
     }
@@ -50,7 +58,8 @@ class Scene {
         if (!comesfromSave)
             promise = cmd.Execute(cmd.Command.ADD, ['Scene', 'Marker'], marker.id, marker.pose.toJson());
 
-        promise.then(() => {
+        promise.then(mar => {
+            const marker = FBTypes.Marker.FromJson(mar);
             this.markers.push(marker);
             this.callEvent("markerAdd", marker, comesfromSave);
         });
@@ -65,6 +74,35 @@ class Scene {
             this.markers = this.markers.filter(marker => marker.id !== id);
             this.callEvent("markerRemove", id);
         });
+    }
+
+    addCamera(camera: FBTypes.Camera, comesfromSave=false) {
+        let cameraType: string;
+        if (!camera)
+            cameraType = "CameraTracker";
+        else cameraType = camera.type;
+
+        let promise = new Promise((resolve, reject) => resolve(true));
+        if (!comesfromSave)
+            promise = cmd.Execute(cmd.Command.ADD, ['Scene', 'Camera'], cameraType);
+        
+        promise.then(cam => {
+            const camera = FBTypes.Camera.FromJson(cam);
+            this.cameras.push(camera);
+            this.callEvent("cameraAdd", camera, comesfromSave);
+        });
+    }
+
+    removeCamera(id: number) {
+        const promise = cmd.Execute(cmd.Command.REM, ['Scene', 'Camera'], id);
+        promise.then(() => {
+            this.cameras = this.cameras.filter(camera => camera.id !== id);
+            this.callEvent("cameraRemove", id);
+        });
+    }
+
+    getCamera(id: number) {
+        return this.cameras.find(camera => camera.id === id);
     }
 
     getMarker(id: number) {

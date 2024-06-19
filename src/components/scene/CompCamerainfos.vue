@@ -5,36 +5,30 @@
     >
         <div class="flex space-x-2 mx-4 justify-center">
             <div class="flex items-center justify-center w-8 h-8 bg-slate-200 dark:bg-slate-500 rounded-full">
-                <p class="text-xl font-bold">M</p>
+                <p class="text-xl font-bold">C</p>
             </div>
             <div class="flex items-center justify-center">
                 <h1 class="text-lg font-semibold">
-                    <get-text :context="Lang.CreateTranslationContext('scene', 'Marker')" />
+                    <get-text :context="Lang.CreateTranslationContext('scene', 'Camera')" />
                 </h1>
             </div>
         </div>
         <div class="flex flex-col">
-            <input-text
-                type=number
-                :label="Lang.CreateTranslationContext('scene', 'MarkerId')"
-                :value="marker.id"
-                @input="onMarkerIdChange"
+            <input-vec3
+                :label="Lang.CreateTranslationContext('scene', 'CameraPos')"
+                :disabled="true"
+                :value="camera.pose.position"
             />
             <input-vec3
-                :label="Lang.CreateTranslationContext('scene', 'MarkerPos')"
-                :value="marker.pose.position"
-                :on-change="onMarkerPosChange"
-            />
-            <input-vec3
-                :label="Lang.CreateTranslationContext('scene', 'MarkerRot')"
-                :value="markerEulerRotation"
-                :on-change="onMarkerRotChange"
+                :label="Lang.CreateTranslationContext('scene', 'CameraRot')"
+                :disabled="true"
+                :value="cameraEulerRotation"
             />
         </div>
         <div class="flex justify-between">
             <div></div>
             <comp-btnblock
-                :onclick="onMarkerDelete"
+                :onclick="onCameraDelete"
             >
                 <get-text :context="Lang.CreateTranslationContext('verbs', 'Delete')" />
             </comp-btnblock>
@@ -51,7 +45,7 @@ import CompBtnblock from '../inputs/CompBtnblock.vue';
 import * as THREE from 'three';
 
 export default {
-    name: 'CompMarkerinfos',
+    name: 'CompCamerainfos',
     components: {
         GetText,
         InputText,
@@ -59,7 +53,7 @@ export default {
         CompBtnblock
     },
     props: {
-        marker: Object,
+        camera: Object,
         scene: Object
     },
     data() {
@@ -71,13 +65,13 @@ export default {
         
     },
     computed: {
-        markerEulerRotation() {
+        cameraEulerRotation() {
             const euler = new THREE.Euler();
             euler.setFromQuaternion(new THREE.Quaternion(
-                this.marker.pose.rotation.x,
-                this.marker.pose.rotation.y,
-                this.marker.pose.rotation.z,
-                this.marker.pose.rotation.w
+                this.camera.pose.rotation.x,
+                this.camera.pose.rotation.y,
+                this.camera.pose.rotation.z,
+                this.camera.pose.rotation.w
             ));
             return {
                 x: Math.round(euler.x * 1800 / Math.PI) / 10,
@@ -87,31 +81,8 @@ export default {
         }
     },
     methods: {
-        onMarkerIdChange(ev) {
-            const nbId = parseInt(ev.target.value);
-            if (isNaN(nbId)) return;
-            this.scene.setMarkerId(this.marker.id, nbId)
-        },
-        onMarkerPosChange(vec) {
-            this.scene.setMarkerPos(this.marker.id, vec);
-        },
-        onMarkerRotChange(vec) {
-            const euler = new THREE.Euler(
-                vec.x * Math.PI / 180,
-                vec.y * Math.PI / 180,
-                vec.z * Math.PI / 180,
-                'XYZ'
-            );
-            const quaternion = new THREE.Quaternion();
-            quaternion.setFromEuler(euler);
-            this.scene.setMarkerRot(this.marker.id, quaternion);
-        },
-        onMarkerDelete() {
-            this.scene.removeMarker(this.marker.id);
-        },
-        toNumber(value) {
-            const nb = parseFloat(value);
-            return isNaN(nb) ? 0 : nb;
+        onCameraDelete() {
+            this.scene.removeCamera(this.camera.id);
         }
     }
 }
