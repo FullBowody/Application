@@ -26,7 +26,7 @@
             />
             <input-vec3
                 :label="Lang.CreateTranslationContext('scene', 'MarkerRot')"
-                :value="marker.pose.rotation"
+                :value="markerEulerRotation"
                 :on-change="onMarkerRotChange"
             />
         </div>
@@ -47,6 +47,7 @@ import InputText from '../inputs/InputText.vue';
 import InputVec3 from '../inputs/InputVec3.vue';
 import Lang from '../../scripts/Lang';
 import CompBtnblock from '../inputs/CompBtnblock.vue';
+import * as THREE from 'three';
 
 export default {
     name: 'CompMarkerinfos',
@@ -68,6 +69,22 @@ export default {
     mounted() {
         
     },
+    computed: {
+        markerEulerRotation() {
+            const euler = new THREE.Euler();
+            euler.setFromQuaternion(new THREE.Quaternion(
+                this.marker.pose.rotation.x,
+                this.marker.pose.rotation.y,
+                this.marker.pose.rotation.z,
+                this.marker.pose.rotation.w
+            ));
+            return {
+                x: Math.round(euler.x * 1800 / Math.PI) / 10,
+                y: Math.round(euler.y * 1800 / Math.PI) / 10,
+                z: Math.round(euler.z * 1800 / Math.PI) / 10
+            };
+        }
+    },
     methods: {
         onMarkerIdChange(ev) {
             const nbId = parseInt(ev.target.value);
@@ -78,7 +95,15 @@ export default {
             this.scene.setMarkerPos(this.marker.id, vec);
         },
         onMarkerRotChange(vec) {
-            this.scene.setMarkerRot(this.marker.id, vec);
+            const euler = new THREE.Euler(
+                vec.x * Math.PI / 180,
+                vec.y * Math.PI / 180,
+                vec.z * Math.PI / 180,
+                'XYZ'
+            );
+            const quaternion = new THREE.Quaternion();
+            quaternion.setFromEuler(euler);
+            this.scene.setMarkerRot(this.marker.id, quaternion);
         },
         onMarkerDelete() {
             this.scene.removeMarker(this.marker.id);

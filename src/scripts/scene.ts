@@ -111,7 +111,7 @@ class Scene {
         if (markerIndex < 0) return;
         const marker = this.markers[markerIndex];
 
-        marker.pose.rotation = FBTypes.Quaternion.FromJson(rotation); // TODO : should be FromEuler()
+        marker.pose.rotation = FBTypes.Quaternion.FromJson(rotation);
         const promise = cmd.Execute(cmd.Command.SET, ['Scene', 'Marker'], markerIndex, undefined, marker.pose.toJson());
         promise.then(() => {
             this.callEvent("markerPoseUpdate", marker);
