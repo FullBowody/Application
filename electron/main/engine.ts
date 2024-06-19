@@ -8,10 +8,15 @@ const FG_RESET = "\x1b[0m";
 
 let fb = null;
 try {
-    fb = require('../../dependencies/wrapper/build/Release/fullbowody.node');
+    const isDev = process.env.VITE_DEV_SERVER_URL !== undefined;
+    const wrapperPath = isDev
+        ? '../../dependencies/wrapper/build/Release/fullbowody.node'
+        : process.cwd() + '/wrapper/fullbowody.node';
+    fb = require(wrapperPath);
     console.log(FG_GREEN + "Fullbowody engine wrapper loaded successfully." + FG_RESET);
 } catch (e) {
     console.warn(FG_YELLOW + "Warning : Engine node wrapper not found, engine communications are thus disabled." + FG_RESET)
+    console.error(e);
 }
 
 export class EngineHandle {

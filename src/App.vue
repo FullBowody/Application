@@ -36,7 +36,7 @@ export default {
         }
 
         // load engine from settings folder
-        const engineFolder = getSetting('advanced.engineFolder');
+        const engineFolder = getSetting('advanced.enginePath');
         if (engineFolder) ipc.invoke("change-engine-path", engineFolder);
     },
     mounted() {

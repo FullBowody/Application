@@ -33,13 +33,13 @@ class Scene {
     fetch() {
         scene.markers = [];
         const markerPromise = cmd.Execute(cmd.Command.GET, ['Scene', 'Markers']);
-        markerPromise.then(markers => {
+        markerPromise.then((markers: any) => {
             markers.forEach((marker: any) => {
                 scene.addMarker(FBTypes.Marker.FromJson(marker), true);
             });
         });
         const cameraPromise = cmd.Execute(cmd.Command.GET, ['Scene', 'Cameras']);
-        cameraPromise.then(cameras => {
+        cameraPromise.then((cameras: any) => {
             cameras.forEach((camera: any) => {
                 scene.addCamera(FBTypes.Camera.FromJson(camera), true);
             });

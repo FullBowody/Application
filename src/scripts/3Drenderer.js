@@ -215,7 +215,7 @@ async function arucoTexture(id) {
 async function updateMarkerID(infos) {
     const marker = rayTargeted.children.find(child => child.userData && child.userData.type === "marker" && child.userData.object.id === infos.oldId);
     if (marker) {
-        marker.userData.id = infos.newId;
+        marker.userData.object.id = infos.newId;
         marker.traverse(child => {
             if (child.isMesh && child.material?.map) {
                 arucoTexture(infos.newId).then(tex => {
