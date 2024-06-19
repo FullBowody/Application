@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { getSetting } from '@/scripts/settings';
 import { getArucoImage, ArucoDictName } from '@/scripts/aruco';
 
@@ -6,6 +7,33 @@ let canvas;
 let camera, scene, renderer, raycaster, rayTargeted;
 let cameraSpeed = 0, cameraDistance = 4, camRotX = 0.78, camRotY = 0.78;
 let lastTime = 0;
+const modelLoader = new GLTFLoader();
+
+const MATERIALS = [
+    0x1e293b, // MAIN COLOR
+    0x64748b, // BORDER COLOR
+    0x0f172a, // OTHER (camera hole or marker texture zone)
+    0x0ea5e9 // SELECTED COLOR
+];
+
+function assignModelMaterials(model) {
+    const materials = MATERIALS.map(color => new THREE.MeshBasicMaterial({color}));
+    model.traverse(child => {
+        if (child.isMesh) {
+            const materialIndex = Math.floor(child.material.color.b * 2200); // getting index from hex value
+            child.material = materials[materialIndex] ?? materials[0];
+        }
+    });
+    if (!model.userData) model.userData = {};
+    model.userData.borderMaterial = materials[1];
+    model.userData.highlightMaterial = materials[3];
+}
+
+async function loadModel(url) {
+    return new Promise((resolve, reject) => {
+        modelLoader.load(url, gltf => resolve(gltf.scene), undefined, reject);
+    });
+}
 
 export function createLine(p1, p2, color) {
     const points = [];
@@ -107,6 +135,28 @@ export function setup() {
         if (canvas.style.cursor != 'pointer')
             canvas.style.cursor = 'grab';
     });
+
+    modelLoader.load('/assets/models/camera.glb', gltf => {
+        const model = gltf.scene;
+        assignModelMaterials(model);
+        scene.add(model);
+    });
+
+    let oldSelectedObjectDetails = null;
+    canvas.addEventListener('objectSelected', ev => {
+        function swapMatColor(mat1, mat2) {
+            const color = mat1.color;
+            mat1.color = mat2.color;
+            mat2.color = color;
+        }
+
+        if (oldSelectedObjectDetails)
+            swapMatColor(oldSelectedObjectDetails.borderMaterial, oldSelectedObjectDetails.highlightMaterial);
+        if (ev.detail && ev.detail.borderMaterial && ev.detail.highlightMaterial)
+            swapMatColor(ev.detail.borderMaterial, ev.detail.highlightMaterial);
+
+        oldSelectedObjectDetails = ev.detail;
+    });
 }
 
 function getCanvasMousePos(e) {
@@ -119,15 +169,15 @@ function getCanvasMousePos(e) {
 
 function onMouseClick(pointerPos) {
     let object = getObjectAtScreenPosition(pointerPos.x, pointerPos.y);
+    console.log(object);
     let counter = 5;
-    while (object && Object.keys(object.userData).length === 0 && counter > 0) {
+    while (object && !object.userData?.type && counter > 0) {
         object = object.parent;
     }
 
-    const event = new CustomEvent('objectSelected', {
+    canvas.dispatchEvent(new CustomEvent('objectSelected', {
         detail: object ? object.userData : null
-    });
-    canvas.dispatchEvent(event);
+    }));
 }
 
 function getObjectAtScreenPosition(x, y) {
@@ -207,19 +257,25 @@ async function addSceneMarker(marker, comesfromSave=false) {
         new THREE.MeshBasicMaterial({color: 0xffffff})
     );
     backPlane.rotation.y = Math.PI;
-    const markerObj = new THREE.Group();
-    markerObj.add(frontPlane);
-    markerObj.add(backPlane);
+    const markerObj = await loadModel('/assets/models/marker.glb');
+    assignModelMaterials(markerObj);
+    const markerMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
+    markerObj.traverse(child => {
+        if (child.isMesh) {
+            if (child.material.color.getHex() === MATERIALS[2]) // dark color => change to marker texture
+                child.material = markerMaterial;
+        }
+    });
     
     const texturePromise = arucoTexture(marker.id);
     texturePromise.then(tex => {
-        frontPlane.material.map = tex;
-        frontPlane.material.needsUpdate = true;
+        markerMaterial.map = tex;
+        markerMaterial.needsUpdate = true;
     });
 
     markerObj.position.set(marker.pose.position.x, marker.pose.position.y, marker.pose.position.z);
     markerObj.rotation.setFromQuaternion(new THREE.Quaternion(marker.pose.rotation.x, marker.pose.rotation.y, marker.pose.rotation.z, marker.pose.rotation.w));
-    markerObj.userData = {type: 'marker', ...marker};
+    markerObj.userData = {type: 'marker', ...marker, ...markerObj.userData};
     rayTargeted.add(markerObj);
 
     if (!comesfromSave)

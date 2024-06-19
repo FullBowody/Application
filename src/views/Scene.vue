@@ -121,7 +121,8 @@ export default {
                     this.selectedObject = scene.getMarker(ev.detail.id);
                     break;
             }
-            this.selectedObject.type = ev.detail.type;
+            if (this.selectedObject)
+                this.selectedObject.type = ev.detail.type;
         });
     },
     methods: {
