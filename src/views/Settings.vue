@@ -21,9 +21,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="flex grow justify-end pt-8"> <!-- reset button zone -->
+                    <comp-btntext
+                        color="red"
+                        :onclick="resetAllSettings"
+                    >
+                        <get-text :context="Lang.CreateTranslationContext('verbs', 'Reset')" />
+                    </comp-btntext>
+                </div>
             </div>
         </div>
-        <div class="flex h-0 w-full">
+        <div class="flex h-0 w-full"> <!-- save popup zone -->
             <div
                 class="flex h-fit w-fit flex-col space-y-2 p-4 mx-auto border-2 border-slate-200 bg-slate-50 dark:bg-slate-700 dark:border-slate-600 rounded-md transition-all"
                 :class="settingsModified ? ' translate-y-[-100%] ': ' translate-y-[15%] '"
@@ -50,7 +58,7 @@ import GetText from '@/components/text/GetText.vue';
 import Lang from '@/scripts/Lang';
 import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
 import CompBtntext from '@/components/inputs/CompBtntext.vue';
-import { settings } from '@/scripts/settings';
+import { settings, resetSettings } from '@/scripts/settings';
 import LogZone from '@/components/cards/LogZone.vue';
 import { Log } from '@/scripts/Logs';
 import CompSetting from '@/components/CompSetting.vue';
@@ -143,6 +151,10 @@ export default {
                     setting.inputValue = undefined;
                 });
             });
+        },
+        resetAllSettings() {
+            resetSettings();
+            this.$router.go();
         }
     }
 }

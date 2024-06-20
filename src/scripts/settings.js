@@ -11,13 +11,16 @@ export function loadSettings() {
 
 export function saveSettings(settings) {
     localStorage.setItem('settings', JSON.stringify(settings));
-    ipc.send('save-settings', settings);
 }
 
 export function saveSetting(name, value) {
     let settings = loadSettings();
     settings[name] = value;
     saveSettings(settings);
+}
+
+export function resetSettings() {
+    localStorage.removeItem('settings');
 }
 
 export function getSetting(name) {
