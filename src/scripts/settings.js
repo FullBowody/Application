@@ -20,7 +20,7 @@ export function saveSetting(name, value) {
 }
 
 export function resetSettings() {
-    localStorage.removeItem('settings');
+    localStorage.setItem('settings', '{}');
 }
 
 export function getSetting(name) {

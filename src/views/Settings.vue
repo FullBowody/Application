@@ -58,7 +58,7 @@ import GetText from '@/components/text/GetText.vue';
 import Lang from '@/scripts/Lang';
 import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
 import CompBtntext from '@/components/inputs/CompBtntext.vue';
-import { settings, resetSettings } from '@/scripts/settings';
+import { settings, resetSettings, loadSettings } from '@/scripts/settings';
 import LogZone from '@/components/cards/LogZone.vue';
 import { Log } from '@/scripts/Logs';
 import CompSetting from '@/components/CompSetting.vue';
@@ -154,7 +154,7 @@ export default {
         },
         resetAllSettings() {
             resetSettings();
-            this.$router.go();
+            this.$router.push({name: 'Home'});
         }
     }
 }
