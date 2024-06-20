@@ -7,17 +7,31 @@
                     <router-view></router-view>
                 </div>
             </div>
+            <div class="flex w-0 h-full z-50 justify-end items-end"> <!-- notifications zone -->
+                <div class="flex flex-col h-fit w-fit p-2">
+                    <comp-notification
+                        v-for="notification in notifs"
+                        :key="notification.id"
+                        :notification="notification"
+                    />
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import CompSidebar from './components/CompSidebar.vue';
+import CompNotification from './components/CompNotification.vue';
+import { notifications, addNotification, Notif } from './scripts/notifications';
 import { getSetting } from './scripts/settings';
 
 export default {
     name: "App",
-    components: {CompSidebar},
+    components: {
+        CompSidebar,
+        CompNotification
+    },
     methods: {},
     setup() {
         const devMode = import.meta.env.DEV;
@@ -38,9 +52,24 @@ export default {
         // load engine from settings folder
         const engineFolder = getSetting('advanced.enginePath');
         if (engineFolder) ipc.invoke("change-engine-path", engineFolder);
+        else addNotification(new Notif(
+            "warning",
+            "Engine not found",
+            "Engine path is not set, please set it in the settings before using the app.",
+            4000
+        ));
+    },
+    data() {
+        return {
+            notifs: notifications
+        }
     },
     mounted() {
         this.$router.push({name: 'Home'});
+        setInterval(() => {
+            // FIXME : this is a workaround to force update the notifications
+            this.$forceUpdate();
+        }, 100);
     }
 };
 </script>
