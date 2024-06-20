@@ -27,7 +27,10 @@
             }
         ],
         "artifactName": "${productName}-Windows-${version}-Setup.${ext}",
-        "icon": "public/assets/icon.ico"
+        "icon": "public/assets/icon.ico",
+        "certificateSha1": "129f2b24b35faac4271d463b23fb5d2cefa4e2da",
+        "signAndEditExecutable": true,
+        "verifyUpdateCodeSignature": true
     },
     "nsis": {
         "oneClick": false,
