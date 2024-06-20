@@ -56,6 +56,8 @@ To build the application, run
 ```bash
 npm run build
 ```
+Be sure to have built the wrapper before building the application.
+Overwise, the application will not be able to communicate with the engine.
 
 ## License
 This project is licensed under the GNU GPL-3.0 License - see the [LICENSE](LICENSE) file for details
