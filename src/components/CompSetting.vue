@@ -31,6 +31,22 @@
             />
         </div>
         <div
+            v-if="setting.type === 'file'"
+            class="flex h-fit w-full space-x-2"
+        >
+            <input-text
+                :label="Lang.CreateTranslationContext('settings', setting.name)"
+                :value="setting.inputValue === undefined ? setting.value() : setting.inputValue"
+                :onchange="ev => { setting.inputValue = ev.target.value; setting.onchange(ev.target.value) }"
+            />
+            <comp-btnblock
+                class="m-auto"
+                :onclick="selectFile"
+            >
+                <folder-icon class="w-6 h-5 w-fit pr-0.5" />
+            </comp-btnblock>
+        </div>
+        <div
             class="flex h-fit w-full pl-2 space-x-4 overflow-hidden transition-all"
             :class="(setting.settings && setting.condition(setting)) ? 'max-h-10': 'max-h-0'"
         >
@@ -50,14 +66,20 @@
 import InputChoice from '@/components/inputs/InputChoice.vue';
 import InputText from '@/components/inputs/InputText.vue';
 import InputSwitch from '@/components/inputs/InputSwitch.vue';
+import CompBtnblock from './inputs/CompBtnblock.vue';
 import Lang from '@/scripts/Lang';
+import {
+    FolderIcon
+} from '@heroicons/vue/24/outline';
 
 export default {
     name: "CompSetting",
     components: {
         InputChoice,
         InputText,
-        InputSwitch
+        InputSwitch,
+        FolderIcon,
+        CompBtnblock
     },
     props: {
         setting: {
@@ -70,6 +92,17 @@ export default {
             Lang
         }
     },
-    methods: {}
+    methods: {
+        selectFile(ev) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = this.setting.accept;
+            input.onchange = ev => {
+                this.setting.inputValue = input.files[0].path;
+                this.setting.onchange(input.files[0].path);
+            };
+            input.click();
+        }
+    }
 }
 </script>

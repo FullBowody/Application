@@ -115,7 +115,8 @@ export const settings = [
         settings: [
             {
                 name: 'EnginePath',
-                type: 'string',
+                type: 'file',
+                accept: '.dll,.so,.dylib',
                 value: () => getSetting('advanced.enginePath') ?? "",
                 onchange: (value) => {},
                 save: async (value) => {

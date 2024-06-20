@@ -1,5 +1,5 @@
 <template>
-    <div class="flex w-fit max-w-full min-w-0">
+    <div class="flex w-fit h-fit max-w-full min-w-0">
         <div
             class="flex items-center justify-center w-fit h-fit bg-white dark:bg-slate-600 rounded-md bg-slate-50 border-2 transition-all max-w-full"
             :class="disabled
