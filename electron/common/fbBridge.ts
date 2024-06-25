@@ -193,10 +193,15 @@ export class Camera {
         };
     }
 
-    // Should not be able to create a Camera from elsewhere than the engine
+    // NOTE: Should not be able to create a Camera from elsewhere than the engine
     // toFB(addon) {
     //     return new addon.Camera(this.id, this.pose.toFB(addon));
     // }
+}
+
+export enum PluginType {
+    CAMERA = "camera",
+    UNKNOWN = "unknown"
 }
 
 export class Plugin {
@@ -223,16 +228,23 @@ export class Plugin {
         );
     }
 
+    public static toPluginType(input: any): PluginType {
+        if (typeof input === "string") {
+            return PluginType[input.toUpperCase()] || PluginType.UNKNOWN;
+        }
+        return PluginType.UNKNOWN;
+    }
+
     public id: number;
-    public type: string;
+    public type: PluginType;
     public name: string;
     public description: string;
     public author: string;
     public version: string;
 
-    constructor(id: number, type: string, name: string, description: string, author: string, version: string) {
+    constructor(id: number, type: string|PluginType, name: string, description: string, author: string, version: string) {
         this.id = id;
-        this.type = type;
+        this.type = Plugin.toPluginType(type);
         this.name = name;
         this.description = description;
         this.author = author;
