@@ -193,7 +193,60 @@ export class Camera {
         };
     }
 
+    // Should not be able to create a Camera from elsewhere than the engine
     // toFB(addon) {
     //     return new addon.Camera(this.id, this.pose.toFB(addon));
     // }
+}
+
+export class Plugin {
+    static FromJson(json) {
+        return new Plugin(
+            json?.id ?? 0,
+            json?.type ?? "",
+            json?.name ?? "",
+            json?.description ?? "",
+            json?.author ?? "",
+            json?.version ?? ""
+        );
+    }
+
+    static FromFB(fbPlugin) {
+        if (!fbPlugin) return null;
+        return new Plugin(
+            fbPlugin.getId(),
+            fbPlugin.getType(),
+            fbPlugin.getName(),
+            fbPlugin.getDescription(),
+            fbPlugin.getAuthor(),
+            fbPlugin.getVersion()
+        );
+    }
+
+    public id: number;
+    public type: string;
+    public name: string;
+    public description: string;
+    public author: string;
+    public version: string;
+
+    constructor(id: number, type: string, name: string, description: string, author: string, version: string) {
+        this.id = id;
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.author = author;
+        this.version = version;
+    }
+
+    toJson() {
+        return {
+            id: this.id,
+            type: this.type,
+            name: this.name,
+            description: this.description,
+            author: this.author,
+            version: this.version
+        };
+    }
 }

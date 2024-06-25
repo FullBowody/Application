@@ -129,8 +129,21 @@ export class EngineHandle {
                         return this.GetEngine().destroyCamera(id);
                     }
                 }
+            },
+            Plugins: {
+                [Command.GET]: () => {
+                    const pluginProvider = this.GetEngine().getPluginProvider();
+                    return pluginProvider.getPlugins().map(p => FBTypes.Plugin.FromFB(p));
+                }
+            },
+            Plugin: {
+                [Command.GET]: (index) => {
+                    const pluginProvider = this.GetEngine().getPluginProvider();
+                    const plugin = pluginProvider.getPlugin(index);
+                    if (!plugin) return null;
+                    return FBTypes.Plugin.FromFB(plugin).toJson();
+                }
             }
-            // TODO : Rest of API (Plugins, ...)
         });
         this._commandTree.setupIPC(ipcMain);
     }
