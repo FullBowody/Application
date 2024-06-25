@@ -105,6 +105,9 @@ import CompPlugin from '@/components/account/CompPlugin.vue';
 import CompBtntext from '@/components/inputs/CompBtntext.vue';
 import API from '../scripts/API';
 
+import * as cmd from "../../electron/common/CommandTree";
+import * as FBTypes from "../../electron/common/fbBridge";
+
 export default {
     name: "Account",
     components: {
@@ -123,7 +126,7 @@ export default {
         }
     },
     mounted() {
-        
+        this.fetchPlugins();
     },
     methods: {
         async login() {
@@ -151,11 +154,21 @@ export default {
         refreshPlugins() {
             const icon = this.$refs.refreshIcon;
             icon.classList.add('spin');
-            setTimeout(() => {
+            this.fetchPlugins().then(() => {
                 icon.classList.remove('spin');
-            }, 500);
-
-            // TODO : Refresh plugins
+            });
+        },
+        async fetchPlugins() {
+            this.plugins = [];
+            const pluginsPromise = cmd.Execute(cmd.Command.GET, ['Plugins']);
+            pluginsPromise.then((plugins) => {
+                if (!plugins) return;
+                plugins.forEach((plugin) => {
+                    this.plugins.push(FBTypes.Plugin.FromJson(plugin));
+                });
+            }).catch((err) => {
+                console.error(err);
+            });
         }
     }
 }

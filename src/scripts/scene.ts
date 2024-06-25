@@ -1,4 +1,3 @@
-
 import * as cmd from "../../electron/common/CommandTree";
 import * as FBTypes from "../../electron/common/fbBridge";
 
@@ -34,12 +33,14 @@ class Scene {
         scene.markers = [];
         const markerPromise = cmd.Execute(cmd.Command.GET, ['Scene', 'Markers']);
         markerPromise.then((markers: any) => {
+            if (!markers) return;
             markers.forEach((marker: any) => {
                 scene.addMarker(FBTypes.Marker.FromJson(marker), true);
             });
         });
         const cameraPromise = cmd.Execute(cmd.Command.GET, ['Scene', 'Cameras']);
         cameraPromise.then((cameras: any) => {
+            if (!cameras) return;
             cameras.forEach((camera: any) => {
                 scene.addCamera(FBTypes.Camera.FromJson(camera), true);
             });

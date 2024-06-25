@@ -23,6 +23,7 @@ export class Notif {
     }
 
     public delete() {
+        if (!this || this.deleted) return;
         this.deleted = true;
         this.vue?.$forceUpdate();
     }
