@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { Command, CommandTree } from "../common/CommandTree";
 import * as FBTypes from "../common/fbBridge";
+import { NotificationType, addNotification } from "./ipc";
 
 const FG_YELLOW = "\x1b[33m";
 const FG_GREEN = "\x1b[32m";
@@ -27,14 +28,35 @@ export class EngineHandle {
 
     static SetEnginePath(path) {
         if (fb !== null) {
-            if (EngineHandle._engine !== null) {
-                fb.destroyEngine(EngineHandle._engine);
-            }
+            EngineHandle.DestroyEngine();
             EngineHandle._enginePath = path;
             EngineHandle._engine = fb.createEngine(path);
+
+            EngineHandle._interval = setInterval(() => {
+                if (EngineHandle._engine !== null) {
+                    EngineHandle._engine.update(1 / 30);
+                }
+            }, 1000 / 30);
+
             const result = EngineHandle._engine !== null;
-            if (result) console.log(FG_GREEN + "Engine loaded successfully." + FG_RESET);
-            else console.warn(FG_YELLOW + "Failed to load engine." + FG_RESET);
+            if (result) {
+                console.log(FG_GREEN + "Engine loaded successfully." + FG_RESET);
+                addNotification(
+                    NotificationType.SUCCESS,
+                    "Engine loaded successfully.",
+                    "It's all setup, enjoy the app !",
+                    4000
+                );
+            }
+            else {
+                console.warn(FG_YELLOW + "Failed to load engine." + FG_RESET);
+                addNotification(
+                    NotificationType.ERROR,
+                    "Failed to load engine.",
+                    "Something went wrong, please check the engine path.",
+                    6000
+                );
+            }
             return result;
         }
         return false;

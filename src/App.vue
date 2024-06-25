@@ -25,6 +25,7 @@ import CompSidebar from './components/CompSidebar.vue';
 import CompNotification from './components/CompNotification.vue';
 import { notifications, addNotification, Notif } from './scripts/notifications';
 import { getSetting } from './scripts/settings';
+import { setupIPC } from './scripts/ipc';
 
 export default {
     name: "App",
@@ -48,6 +49,8 @@ export default {
                 }
             });
         }
+
+        setupIPC();
 
         // load engine from settings folder (notify if not found)
         const engineFolder = getSetting('advanced.enginePath');

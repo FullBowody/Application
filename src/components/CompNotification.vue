@@ -43,7 +43,7 @@
         </div>
         <span class="flex bg-slate-200 dark:bg-slate-600 w-full h-1 rounded-full my-2" />
         <div class="p-1">
-            <p class="text-sm">
+            <p class="text-sm text-wrap">
                 {{ notification.message }}
             </p>
         </div>

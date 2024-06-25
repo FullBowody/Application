@@ -18,8 +18,8 @@ export class Notif {
         this.deleted = true;
         setTimeout(() => {
             this.deleted = false;
-            this.vue.$forceUpdate();
-        }, 10);
+            this.vue?.$forceUpdate();
+        }, 20);
     }
 
     public delete() {

@@ -94,7 +94,7 @@ setTimeout(removeLoading, 4999)
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("ipc", {
-    send: ipcRenderer.send,
-    on: ipcRenderer.on,
-    invoke: ipcRenderer.invoke,
+    send: (channel: string, data: any) => { ipcRenderer.send(channel, data) },
+    on: (channel: string, listener: any) => { ipcRenderer.on(channel, listener) },
+    invoke: (channel: string, data: any) => ipcRenderer.invoke(channel, data)
 });
