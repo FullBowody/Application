@@ -71,36 +71,36 @@
 
 .show-up {
     opacity: 0;
-    animation: show-up 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
+    animation: show-up 0.2s ease-in-out forwards;
 }
 .show-down {
     opacity: 0;
-    animation: show-down 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
+    animation: show-down 0.2s ease-in-out forwards;
 }
 .show-left {
     opacity: 0;
-    animation: show-left 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
+    animation: show-left 0.2s ease-in-out forwards;
 }
 .show-right {
     opacity: 0;
-    animation: show-right 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
+    animation: show-right 0.2s ease-in-out forwards;
 }
 
 .hide-up {
     opacity: 0;
-    animation: hide-up 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
+    animation: hide-up 0.2s ease-in-out forwards;
 }
 .hide-down {
     opacity: 0;
-    animation: hide-down 0.52 cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
+    animation: hide-down 0.2s ease-in-out forwards;
 }
 .hide-left {
     opacity: 0;
-    animation: hide-left 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
+    animation: hide-left 0.2s ease-in-out forwards;
 }
 .hide-right {
     opacity: 0;
-    animation: hide-right 0.2s cubic-bezier(0.2, 0.8, 0.2, 0.8) forwards;
+    animation: hide-right 0.2s ease-in-out forwards;
 }
 
 @keyframes debug {

@@ -49,14 +49,14 @@ export default {
             });
         }
 
-        // load engine from settings folder
+        // load engine from settings folder (notify if not found)
         const engineFolder = getSetting('advanced.enginePath');
         if (engineFolder) ipc.invoke("change-engine-path", engineFolder);
         else addNotification(new Notif(
             "warning",
             "Engine not found",
             "Engine path is not set, please set it in the settings before using the app.",
-            4000
+            8000
         ));
     },
     data() {
@@ -69,7 +69,7 @@ export default {
         setInterval(() => {
             // FIXME : this is a workaround to force update the notifications
             this.$forceUpdate();
-        }, 100);
+        }, 500);
     }
 };
 </script>

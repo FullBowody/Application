@@ -6,6 +6,8 @@ export class Notif {
     public title: string;
     public message: string;
     public duration: number;
+    public deleted: boolean;
+    public vue: any;
 
     constructor(type: string, title: string, message: string, duration: number = 1000) {
         this.type = type;
@@ -13,6 +15,20 @@ export class Notif {
         this.title = title;
         this.message = message;
         this.duration = duration;
+        this.deleted = true;
+        setTimeout(() => {
+            this.deleted = false;
+            this.vue.$forceUpdate();
+        }, 10);
+    }
+
+    public delete() {
+        this.deleted = true;
+        this.vue?.$forceUpdate();
+    }
+
+    public setVue(vue: any) {
+        this.vue = vue;
     }
 }
 
@@ -22,6 +38,11 @@ export function addNotification(notif: Notif) {
     notifications.push(notif);
     setTimeout(() => {
         const index = notifications.findIndex(n => n.id === notif.id);
-        if (index !== -1) notifications.splice(index, 1);
+        if (index !== -1) {
+            notifications[index].delete();
+            setTimeout(() => {
+                notifications.splice(index, 1);
+            }, 510);
+        }
     }, notif.duration);
 }
