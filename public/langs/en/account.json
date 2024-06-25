@@ -3,6 +3,8 @@
     "NotLoggedInDesc": "Please log in to access all features of the app",
     "Account": "Account",
     "Plugins": "Plugins",
+    "Version": "Version",
+    "Author": "Author",
     "NoPlugins": "No plugins installed",
     "NoPluginsDesc": "You can install plugins by clicking",
     "Here": "here"

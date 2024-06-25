@@ -22,7 +22,7 @@
         </div>
         <div
             v-else
-            class="flex grow flex-col space-y-8 items-center"
+            class="flex max-w-full grow flex-col space-y-8 items-center"
         >
             <div class="h-fit w-full">
                 <p class="text-xl font-semibold pb-2">
@@ -66,7 +66,7 @@
                         </comp-btnblock>
                     </div>
                 </div>
-                <comp-card class="flex justify-between p-4">
+                <comp-card class="flex min-w-0 max-w-full justify-between p-4 overflow-y-hidden overflow-x-auto space-x-4">
                     <div
                         v-if="plugins.length === 0"
                         class="h-fit w-fit my-8 mx-auto">
@@ -83,6 +83,11 @@
                             </button>
                         </p>
                     </div>
+                    <comp-plugin
+                        v-for="plugin in plugins"
+                        :key="plugin.id"
+                        :plugin="plugin"
+                    />
                 </comp-card>
             </div>
         </div>
@@ -96,6 +101,7 @@ import Lang from '@/scripts/Lang';
 import CompBtnblock from '@/components/inputs/CompBtnblock.vue';
 import '@/scripts/portal.min.js';
 import CompCard from '@/components/cards/CompCard.vue';
+import CompPlugin from '@/components/account/CompPlugin.vue';
 import CompBtntext from '@/components/inputs/CompBtntext.vue';
 import API from '../scripts/API';
 
@@ -105,7 +111,8 @@ export default {
         GetText,
         CompBtnblock,
         CompCard,
-        CompBtntext
+        CompBtntext,
+        CompPlugin
     },
     methods: {},
     data() {

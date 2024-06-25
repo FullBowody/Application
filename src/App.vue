@@ -1,5 +1,5 @@
 <template>
-    <div id="app" class="select-none outline-none outline-sky-500 flex flex-col w-screen h-screen min-h-0 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
+    <div id="app" class="select-none outline-none outline-sky-500 flex flex-col w-screen h-screen min-h-0 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-200">
         <div class="flex grow flex-row min-h-0 overflow-hidden">
             <comp-sidebar />
             <div class="flex grow p-2 min-w-0 max-w-full">

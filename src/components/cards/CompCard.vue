@@ -1,7 +1,7 @@
 <template>
     <div
-        class="border-2 rounded-lg"
-        :class="overrideBorder? '': 'border-slate-200 dark:border-slate-600'"
+        class="border-2 rounded-lg border-slate-200 dark:border-slate-600"
+        :class="classes"
     >
         <slot />
     </div>
@@ -16,6 +16,10 @@ export default {
         overrideBorder: {
             type: Boolean,
             default: false
+        },
+        classes: {
+            type: String,
+            default: ''
         }
     },
     data() {
