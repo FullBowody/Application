@@ -48,24 +48,6 @@
                 </div>
                 <div class="flex flex-wrap items-center justify-evenly">
                     <comp-card class="flex w-[45%] px-4 py-2 space-x-4 items-center">
-                        <cf-icon-card
-                            class="h-20 w-20"
-                            :clickable="false"
-                            :animate="false"
-                        />
-                        <div class="w-fit h-fit">
-                            <p class="pl-1 text-xl font-semibold">
-                                Cats & Foxes
-                            </p>
-                            <button
-                                class="href"
-                                @click="() => openPage('https://catsandfoxes.com')"
-                            >
-                                catsandfoxes.com
-                            </button>
-                        </div>
-                    </comp-card>
-                    <comp-card class="flex w-[45%] px-4 py-2 space-x-4 items-center">
                         <tb-icon-card
                             class="h-20 w-20"
                             :clickable="false"
