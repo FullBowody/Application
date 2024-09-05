@@ -138,7 +138,7 @@ class API {
     static Credentials = Credentials;
 
     // API constants
-    static API_URL = 'https://fullbowody.apis.furwaz.fr';
+    static API_URL = 'https://api.fullbowody.com';
     static get METHOD() {
         return {
             GET: "GET",

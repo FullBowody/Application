@@ -1,12 +1,15 @@
 let dictJSON: any = null;
 async function fetchDictJSON(): Promise<any> {
-	return new Promise(async (resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		if (dictJSON) {
 			resolve(dictJSON);
 		} else {
-			const response = await fetch('./assets/aruco-dict.json');
-			dictJSON = await response.json();
-			resolve(dictJSON);
+			fetch('./assets/aruco-dict.json')
+				.then(res => res.json())
+				.then(json => {
+					dictJSON = json;
+					resolve(json);
+				});
 		}
 	});
 }
@@ -20,8 +23,8 @@ export enum ArucoDictName {
 
 async function getDictData(dictName: ArucoDictName): Promise<any> {
 	const dict = await fetchDictJSON();
-	var dictNameStr = dictName.toString();
-	for (var key in dict) {
+	const dictNameStr = dictName.toString();
+	for (const key in dict) {
 		if (key.toUpperCase().indexOf(dictNameStr.toUpperCase()) >= 0) {
 			return dict[key];
 		}
@@ -34,7 +37,7 @@ function getMarkerSize(dictName: ArucoDictName) {
 }
 
 async function getArucoBytes(dictName: ArucoDictName, id: number): Promise<number[]> {
-	var dict = await getDictData(dictName);
+	const dict = await getDictData(dictName);
 	if (!dict) {
 		console.error("Dictionary not found : " + dictName.toString());
 		return [];
@@ -42,14 +45,14 @@ async function getArucoBytes(dictName: ArucoDictName, id: number): Promise<numbe
 
 	const dictMarkerSize = getMarkerSize(dictName);
 
-	var bytes = dict[id];
-	var bits = [];
-	var bitsCount = dictMarkerSize * dictMarkerSize;
+	const bytes = dict[id];
+	const bits = [];
+	const bitsCount = dictMarkerSize * dictMarkerSize;
 
 	// Parse marker's bytes
-	for (var byte of bytes) {
-		var start = bitsCount - bits.length;
-		for (var i = Math.min(7, start - 1); i >= 0; i--) {
+	for (const byte of bytes) {
+		const start = bitsCount - bits.length;
+		for (let i = Math.min(7, start - 1); i >= 0; i--) {
 			bits.push((byte >> i) & 1);
 		}
 	}
@@ -72,8 +75,8 @@ async function drawAruco(ctx: CanvasRenderingContext2D, size: number, dictName: 
 	ctx.fillRect(padding, padding, size-padding*2, size-padding*2);
 
 	// Draw marker
-	for (var i = 0; i < arucoSize; i++) {
-		for (var j = 0; j < arucoSize; j++) {
+	for (let i = 0; i < arucoSize; i++) {
+		for (let j = 0; j < arucoSize; j++) {
 			ctx.fillStyle = (arucoBytes[i * arucoSize + j])? "white": "black";
 			ctx.fillRect(
 				padding + j * arucoCellSizePx + arucoCellSizePx,

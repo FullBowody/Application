@@ -3,7 +3,7 @@ This repository contains the source code for the FullBowody Application.
 It is a web application used as an interface between the user and
 the [FullBowody Engine](https://github.com/FullBowody/Engine).
 
-More information about the FullBowody project can be found on the [FullBowody website](https://fullbowody.projects.furwaz.fr).
+More information about the FullBowody project can be found on the [FullBowody website](https://fullbowod.com).
 
 ![preview image](./doc/preview.png)
 

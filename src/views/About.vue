@@ -30,9 +30,9 @@
                             </p>
                             <button
                                 class="href"
-                                @click="() => openPage('https://furwaz.fr')"
+                                @click="() => openPage('https://furwaz.com')"
                             >
-                                furwaz.fr
+                                furwaz.com
                             </button>
                         </div>
                     </comp-card>
@@ -79,7 +79,7 @@
                     <get-text :context="Lang.CreateTranslationContext('about', 'MoreDesc')" />
                     <button
                         class="href"
-                        @click="() => openPage('https://fullbowody.projects.furwaz.fr')"
+                        @click="() => openPage('https://fullbowody.com')"
                     >
                         <get-text :context="Lang.CreateTranslationContext('about', 'MoreWeb')" />
                     </button>

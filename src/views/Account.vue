@@ -133,7 +133,7 @@ export default {
             const response = await API.execute(API.ROUTE.TOKEN());
             const token = response.data;
 
-            ipc.send('open-url', 'https://furwaz.fr/portal?token=' + token);
+            ipc.send('open-url', 'https://furwaz.com/portal?token=' + token);
             this.register(token);
         },
         async register(token) {
@@ -149,7 +149,7 @@ export default {
             this.$forceUpdate();
         },
         openPluginsPage() {
-            ipc.send('open-url', 'https://fullbowody.projects.furwaz.fr/plugins');
+            ipc.send('open-url', 'https://fullbowody.com/plugins');
         },
         refreshPlugins() {
             const icon = this.$refs.refreshIcon;
