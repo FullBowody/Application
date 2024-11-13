@@ -125,6 +125,19 @@ export const settings = [
                     // TODO : handle error with notification
                     // (create a notification system [state:loading/success/error/warning, title+icon+desc, notificationId for content updates, etc...])
                 }
+            },
+            {
+                name: 'WrapperPath',
+                type: 'file',
+                accept: '.node',
+                value: () => getSetting('advanced.wrapperPath') ?? "",
+                onchange: (value) => {},
+                save: async (value) => {
+                    saveSetting('advanced.wrapperPath', value);
+                    const success = await ipc.invoke("change-wrapper-path", value);
+                    // TODO : handle error with notification
+                    // (create a notification system [state:loading/success/error/warning, title+icon+desc, notificationId for content updates, etc...])
+                }
             }
         ]
     }

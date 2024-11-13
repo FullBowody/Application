@@ -52,9 +52,12 @@ export default {
 
         setupIPC();
 
+        const wrapperPath = getSetting('advanced.wrapperPath');
+        if (wrapperPath) ipc.invoke("change-wrapper-path", wrapperPath);
+
         // load engine from settings folder (notify if not found)
-        const engineFolder = getSetting('advanced.enginePath');
-        if (engineFolder) ipc.invoke("change-engine-path", engineFolder);
+        const enginePath = getSetting('advanced.enginePath');
+        if (enginePath) ipc.invoke("change-engine-path", enginePath);
         else addNotification(new Notif(
             "warning",
             "Engine not found",

@@ -26,6 +26,7 @@
 
     "Advanced": "Avancé",
     "EnginePath": "Chemin vers le moteur FullBowody",
+    "WrapperPath": "Chemin vers le wrapper FullBowody",
 
     "SaveTitle": "Vous avez changé des paramètres",
     "UnknownErrorSaving": "Oups, une erreur inconnue est survenue :(",

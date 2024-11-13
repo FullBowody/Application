@@ -8,23 +8,39 @@ const FG_GREEN = "\x1b[32m";
 const FG_RESET = "\x1b[0m";
 
 let fb = null;
-try {
-    const isDev = process.env.VITE_DEV_SERVER_URL !== undefined;
-    const wrapperPath = isDev
-        ? '../../dependencies/wrapper/build/Release/fullbowody.node'
-        : process.cwd() + '/wrapper/fullbowody.node';
-    fb = require(wrapperPath);
-    console.log(FG_GREEN + "Fullbowody engine wrapper loaded successfully." + FG_RESET);
-} catch (e) {
-    console.warn(FG_YELLOW + "Warning : Engine node wrapper not found, engine communications are thus disabled." + FG_RESET)
-    console.error(e);
-}
 
 export class EngineHandle {
     static _engine = null;
     static _interval = null;
     static _commandTree = null;
     static _enginePath = null;
+
+    static SetWrapperPath(path) {
+        const reloadEngine = fb !== null;
+        if (reloadEngine) {
+            EngineHandle.DestroyEngine();
+        }
+
+        try {
+            const isPathOverriden = path !== undefined;
+            const isDev = process.env.VITE_DEV_SERVER_URL !== undefined;
+            const wrapperPath = isPathOverriden ? path : (
+                isDev
+                ? '../../dependencies/wrapper/build/Release/fullbowody.node'
+                : process.cwd() + '/wrapper/fullbowody.node'
+            );
+            fb = require(wrapperPath);
+            console.log(FG_GREEN + "Fullbowody engine wrapper loaded successfully." + FG_RESET);
+            if (reloadEngine) {
+                EngineHandle.SetEnginePath(EngineHandle._enginePath);
+            }
+            return true;
+        } catch (e) {
+            console.warn(FG_YELLOW + "Warning : Engine node wrapper not found, engine communications are thus disabled." + FG_RESET)
+            console.error(e);
+        }
+        return false;
+    }
 
     static SetEnginePath(path) {
         if (fb !== null) {
@@ -58,6 +74,14 @@ export class EngineHandle {
                 );
             }
             return result;
+        } else {
+            console.warn(FG_YELLOW + "Failed to load engine, wrapper not loaded." + FG_RESET);
+            addNotification(
+                NotificationType.ERROR,
+                "Failed to load engine.",
+                "Something went wrong, please check the wrapper path.",
+                6000
+            );
         }
         return false;
     }
@@ -74,6 +98,7 @@ export class EngineHandle {
         if (EngineHandle._engine !== null) {
             if (fb !== null) {
                 fb.destroyEngine(EngineHandle._engine);
+                EngineHandle._engine = null;
             }
         }
     }
@@ -132,14 +157,14 @@ export class EngineHandle {
             },
             Plugins: {
                 [Command.GET]: () => {
-                    const pluginProvider = this.GetEngine().getPluginProvider();
-                    return pluginProvider.getPlugins().map(p => FBTypes.Plugin.FromFB(p));
+                    const plugins = this.GetEngine().getPlugins();
+                    return plugins.map(p => FBTypes.Plugin.FromFB(p));
                 }
             },
             Plugin: {
                 [Command.GET]: (index) => {
-                    const pluginProvider = this.GetEngine().getPluginProvider();
-                    const plugin = pluginProvider.getPlugin(index);
+                    const plugins = this.GetEngine().getPlugins();
+                    const plugin = plugins[index];
                     if (!plugin) return null;
                     return FBTypes.Plugin.FromFB(plugin).toJson();
                 }

@@ -108,6 +108,12 @@ ipcMain.handle('change-engine-path', async (event, ...args) => {
     });
 });
 
+ipcMain.handle('change-wrapper-path', async (event, ...args) => {
+    return new Promise<boolean>((resolve, reject) => {
+        resolve(EngineHandle.SetWrapperPath(args[0]));
+    });
+});
+
 // New window example arg: new windows url
 ipcMain.handle('open-win', (_, arg) => {
     const childWindow = new BrowserWindow({
