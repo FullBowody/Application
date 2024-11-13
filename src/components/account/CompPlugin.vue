@@ -1,6 +1,6 @@
 <template>
     <comp-card
-        class="flex flex-col p-2 h-full min-w-[10em] max-w-[20em] space-y-2 shadow-xl"
+        class="flex flex-col p-2 h-full min-w-[10em] max-w-[15em] space-y-2 shadow-xl"
         :classes="'min-w-min'"
     >
         <div class="flex w-fit space-x-2 p-2">

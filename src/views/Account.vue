@@ -66,10 +66,8 @@
                         </comp-btnblock>
                     </div>
                 </div>
-                <comp-card class="flex min-w-0 max-w-full justify-between p-4 overflow-y-hidden overflow-x-auto space-x-4">
-                    <div
-                        v-if="plugins.length === 0"
-                        class="h-fit w-fit my-8 mx-auto">
+                <comp-card class="flex min-w-0 max-w-full justify-start items-center p-4 overflow-y-hidden overflow-x-auto space-x-4">
+                    <div v-if="plugins.length === 0" class="h-fit w-fit my-8 mx-auto">
                         <p class="text-center text-lg font-semibold">
                             <get-text :context="Lang.CreateTranslationContext('account', 'NoPlugins')" />
                         </p>
@@ -88,6 +86,11 @@
                         :key="plugin.id"
                         :plugin="plugin"
                     />
+                    <button v-if="plugins.length > 0" @click="openPluginsPage"
+                        class="flex justify-center items-center h-full w-20 border-2 border-dashed rounded-lg border-slate-200 dark:border-slate-600 transition-all
+                               text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:dark:text-slate-200 hover:border-slate-300 hover:dark:border-slate-500">
+                        <p class="text-4xl pb-2"> + </p>
+                    </button>
                 </comp-card>
             </div>
         </div>
@@ -107,6 +110,7 @@ import API from '../scripts/API';
 
 import * as cmd from "../../electron/common/CommandTree";
 import * as FBTypes from "../../electron/common/fbBridge";
+import { RouterLink } from 'vue-router';
 
 export default {
     name: "Account",

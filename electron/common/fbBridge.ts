@@ -207,7 +207,7 @@ export enum PluginType {
 export class Plugin {
     static FromJson(json) {
         return new Plugin(
-            json?.id ?? 0,
+            // json?.id ?? 0,
             json?.type ?? "",
             json?.name ?? "",
             json?.description ?? "",
@@ -219,7 +219,7 @@ export class Plugin {
     static FromFB(fbPlugin) {
         if (!fbPlugin) return null;
         return new Plugin(
-            fbPlugin.getId(),
+            // fbPlugin.getId(),
             fbPlugin.getType(),
             fbPlugin.getName(),
             fbPlugin.getDescription(),
@@ -235,15 +235,15 @@ export class Plugin {
         return PluginType.UNKNOWN;
     }
 
-    public id: number;
+    // public id: number;
     public type: PluginType;
     public name: string;
     public description: string;
     public author: string;
     public version: string;
 
-    constructor(id: number, type: string|PluginType, name: string, description: string, author: string, version: string) {
-        this.id = id;
+    constructor(/*id: number, */type: string|PluginType, name: string, description: string, author: string, version: string) {
+        // this.id = id;
         this.type = Plugin.toPluginType(type);
         this.name = name;
         this.description = description;
@@ -253,7 +253,7 @@ export class Plugin {
 
     toJson() {
         return {
-            id: this.id,
+            // id: this.id,
             type: this.type,
             name: this.name,
             description: this.description,
